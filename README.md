@@ -1,127 +1,121 @@
 # Systems Control
 
-Dashboard em **Laravel 13.26.1** para acompanhar a saúde dos sistemas da empresa e os logs de seus backups. A aplicação usa Blade para a interface, Eloquent para persistência e SQLite como banco padrão de desenvolvimento.
+Dashboard em **Laravel 13** para monitoramento centralizado de clientes, serviços periódicos (estilo Heartbeat / Dead Man's Switch), arquivos de logs de execução e alertas automáticos por e-mail.
 
-## O que está incluído
+---
 
-A tela inicial (`/`) exibe os sistemas cadastrados, o último resultado de healthcheck, o último backup recebido e os cinco logs mais recentes de cada sistema. Os dados aparecem automaticamente assim que os sistemas começam a enviar informações pela API.
+## 🌟 Recursos Principais
 
-A ingestão é protegida por token. O valor deve ser definido na variável `MONITORING_API_TOKEN` do arquivo `.env`. O token pode ser enviado como `Authorization: Bearer <token>` ou como `X-Monitoring-Token: <token>`.
+* **Cadastro de Clientes com Token Exclusivo:** Cada cliente (ex: *NeeMedT*) se cadastra e recebe uma chave de API única (`clt_live_...`).
+* **Monitoramento Periódico de Serviços (Heartbeat):** Cada serviço (ex: *Envio de e-mails*, *Backup do sistema*) avisa o dashboard quando executa, informando a periodicidade esperada (ex: a cada 60 min ou 24h).
+* **Detecção Automática de Atrasos:** Se um serviço não enviar sinal de vida dentro do prazo combinado (+ tolerância), o painel muda para status **Atrasado** e destaca o alerta.
+* **Alertas por E-mail:** Envio automático de notificações para uma lista de e-mails (`notification_emails`) em caso de:
+  1. Falha explícita (`ok: false`).
+  2. Atraso/inatividade do heartbeat (via `php artisan monitors:check-deadlines`).
+  3. Notificação de normalização/recuperação (`ok: true`).
+* **Anexo e Visualizador de Logs:** Envio opcional de arquivos `.log`/`.txt` junto com o heartbeat, com visualizador estilo terminal no Dashboard e download do arquivo original.
 
-| Método | Endpoint | Finalidade |
-| --- | --- | --- |
-| `POST` | `/api/healthchecks` | Cria ou atualiza o status e IP externo de um sistema |
-| `POST` | `/api/backups/logs` | Recebe e armazena um arquivo de log de backup |
-| `GET` | `/api/systems` | Consulta os sistemas e os cinco últimos backups de cada um |
-| `GET` | `/api/dashboard/metrics` | Retorna métricas agregadas e sistemas para polling reativo |
-| `GET` | `/` | Abre o dashboard operacional otimizado para monitores |
+---
 
+## 📡 Endpoints da API
 
-## Requisitos
+| Método | Endpoint | Autenticação | Finalidade |
+| :--- | :--- | :--- | :--- |
+| `POST` | `/api/clients/register` | Pública | Cadastra um novo cliente e emite seu `api_token` |
+| `POST` | `/api/heartbeat` | Token do Cliente | Registra sinal de vida, periodicidade, status e log anexo |
+| `GET` | `/api/services/{service}/logs/{log}/download` | Pública/Sessão | Download do arquivo de log original |
+| `GET` | `/api/dashboard/metrics` | Pública | Retorna métricas agregadas e clientes para polling reativo |
+| `GET` | `/` | Pública | Abre o Dashboard operacional para monitores e NOC |
 
-É necessário ter PHP 8.3 ou superior, Composer e a extensão SQLite habilitada. O projeto já contém um banco SQLite vazio em `database/database.sqlite`.
+---
 
-## Instalação
+## 1. Como Cadastrar um Cliente
 
-```bash
-cp .env.example .env
-composer install
-php artisan key:generate
-mkdir -p database
-touch database/database.sqlite
-php artisan migrate
-php artisan serve
-```
-
-No `.env`, substitua `change-this-token-in-production` por um token forte e defina a URL correta da aplicação:
-
-```dotenv
-APP_URL=http://localhost:8000
-MONITORING_API_TOKEN=troque-por-um-token-longo-e-seguro
-```
-
-Depois, acesse `http://localhost:8000`.
-
-## Enviando um healthcheck
-
-O envio cria ou atualiza o sistema automaticamente, registrando seu status e IP externo. O `slug` e o `ip` são opcionais; quando o IP não for informado, a API detecta automaticamente o IP de origem da requisição.
+Cadastre o cliente uma única vez para receber o token de autenticação:
 
 ```bash
-curl -X POST http://localhost:8000/api/healthchecks \
-  -H 'Authorization: Bearer troque-por-um-token-longo-e-seguro' \
-  -H 'Accept: application/json' \
+curl -X POST http://localhost:8000/api/clients/register \
   -H 'Content-Type: application/json' \
+  -H 'Accept: application/json' \
   -d '{
-    "name": "ERP Principal",
-    "slug": "erp-principal",
-    "ok": true,
-    "ip": "45.225.238.218",
-    "message": "API respondeu em 42ms"
+    "name": "NeeMedT",
+    "slug": "neemedt"
   }'
 ```
 
-O campo `ok` pode ser `true` ou `false`. Também é possível usar `status` com os valores `ok`, `failed` ou `unknown`.
+**Resposta (201 Created):**
+```json
+{
+  "message": "Cliente cadastrado com sucesso! Guarde este token de API...",
+  "client": {
+    "id": 1,
+    "name": "NeeMedT",
+    "slug": "neemedt"
+  },
+  "api_token": "clt_live_a1b2c3d4e5f67890abcdef1234567890abcdef12"
+}
+```
 
-## Enviando um log de backup
+---
 
-O sistema precisa existir previamente, normalmente por meio de um healthcheck. O arquivo é validado e salvo no disco local privado em `storage/app/private/backup-logs`.
+## 2. Como Enviar um Heartbeat (Sinal de Vida)
 
+### A) Ping Simples em JSON (Ex: Rotina de E-mails a cada 60 min)
 ```bash
-curl -X POST http://localhost:8000/api/backups/logs \
-  -H 'X-Monitoring-Token: troque-por-um-token-longo-e-seguro' \
+curl -X POST http://localhost:8000/api/heartbeat \
+  -H 'Authorization: Bearer clt_live_seu_token_aqui' \
+  -H 'Content-Type: application/json' \
   -H 'Accept: application/json' \
-  -F 'system=erp-principal' \
-  -F 'status=success' \
+  -d '{
+    "service": "Envio de emails do financeiro",
+    "interval_minutes": 60,
+    "grace_minutes": 10,
+    "ok": true,
+    "message": "45 e-mails enviados em 2 segundos",
+    "duration_seconds": 2,
+    "notification_emails": "ti@neemedt.com; suporte@empresa.com"
+  }'
+```
+
+### B) Ping com Upload de Arquivo de Log (Ex: Backup Diário de 24h)
+```bash
+curl -X POST http://localhost:8000/api/heartbeat \
+  -H 'Authorization: Bearer clt_live_seu_token_aqui' \
+  -H 'Accept: application/json' \
+  -F 'service=Backup do sistema' \
+  -F 'interval_minutes=1440' \
+  -F 'grace_minutes=30' \
+  -F 'ok=true' \
+  -F 'message=Backup concluído com sucesso' \
+  -F 'notification_emails=ti@neemedt.com; suporte@empresa.com' \
   -F 'log_file=@/var/log/backup-erp.log'
 ```
 
-O campo `status` aceita `success`, `failed`, `warning` ou `received`. O limite de upload é 10 MB. O banco guarda o nome original, tamanho, caminho privado, data de recebimento e um trecho de até 5.000 caracteres do arquivo para visualização rápida.
+---
 
-## Modelo de dados
+## ⏰ Verificação de Atrasos & Alertas Automáticos
 
-A tabela `systems` guarda identidade, status do healthcheck e as datas de atividade. A tabela `backup_logs` pertence a um sistema e registra cada arquivo recebido. Ao receber um backup, `last_backup_at` do sistema é atualizado automaticamente.
+Para checar continuamente se algum serviço atrasou e disparar e-mails de alerta, o comando do console é agendado no Laravel:
 
-## Coleção Insomnia
+```bash
+php artisan monitors:check-deadlines
+```
 
-O arquivo [insomnia.json](file:///home/helitto/projects/sistemas-dashboard/insomnia.json) está disponível na raiz do projeto e pode ser importado diretamente no Insomnia (Import > From File).
+*(No servidor em produção, execute o cron padrão do Laravel `* * * * * php /caminho/artisan schedule:run >> /dev/null 2>&1`).*
 
-Ele já inclui:
-* Variáveis de ambiente (`base_url`, `token`, `system_slug`).
-* Requisições de **Healthchecks** (OK com IP, Falha e via Header).
-* Requisições de **Backups** (Upload de arquivo de log multipart).
-* Requisição de **Listagem de Sistemas**.
+---
 
-## Testes
+## 📁 Coleção Insomnia
 
-A suíte de testes cobre token obrigatório, criação e atualização de healthcheck com validação de IP, upload de log e renderização do dashboard:
+O arquivo [insomnia.json](file:///home/lucas/web_projects/dashboard/insomnia.json) na raiz do projeto contém todas as requisições prontas e organizadas por pastas:
+* **1. Clientes:** Cadastro e emissão de token.
+* **2. Heartbeat & Serviços:** JSON Sucesso, JSON Falha e Multipart com upload de arquivo.
+* **3. Dashboard & Métricas:** Polling de métricas.
+
+---
+
+## 🧪 Testes Automatizados
 
 ```bash
 php artisan test
 ```
-
-Resultado validado neste pacote: **8 testes aprovados e 29 asserções**.
-
-## Estrutura principal
-
-```text
-app/Http/Controllers/Api/HealthcheckController.php
-app/Http/Controllers/Api/BackupLogController.php
-app/Http/Controllers/DashboardController.php
-app/Http/Middleware/VerifyMonitoringToken.php
-app/Models/System.php
-app/Models/BackupLog.php
-database/migrations/*_create_systems_table.php
-database/migrations/*_create_backup_logs_table.php
-database/migrations/*_add_external_ip_to_systems_table.php
-resources/views/dashboard.blade.php
-routes/api.php
-routes/web.php
-insomnia.json
-```
-
-## Referências
-
-[1]: https://laravel.com/docs/13.x/routing "Laravel 13.x — Routing"
-[2]: https://laravel.com/docs/13.x/validation "Laravel 13.x — Validation"
-[3]: https://laravel.com/docs/13.x/filesystem "Laravel 13.x — File Storage"
-[4]: https://laravel.com/docs/13.x/migrations "Laravel 13.x — Database Migrations"
