@@ -3,62 +3,96 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\BackupLog;
-use App\Models\System;
+use App\Models\Client;
+use App\Models\ServiceLog;
 use Illuminate\Http\JsonResponse;
 
 class DashboardApiController extends Controller
 {
     public function __invoke(): JsonResponse
     {
-        $systems = System::query()
-            ->with(['backupLogs' => fn ($query) => $query->latest('received_at')->limit(5)])
-            ->withCount('backupLogs')
+        $clients = Client::query()
+            ->with([
+                'monitoredServices' => function ($query) {
+                    $query->with([
+                        'serviceLogs' => fn ($logQuery) => $logQuery->latest('received_at')->limit(5),
+                    ])->orderBy('name');
+                },
+            ])
             ->orderBy('name')
             ->get();
 
+        $allServices = $clients->flatMap->monitoredServices;
+
         $metrics = [
-            'total' => $systems->count(),
-            'online' => $systems->where('last_health_status', 'ok')->count(),
-            'attention' => $systems->whereIn('last_health_status', ['failed', 'unknown'])->count(),
-            'backups' => BackupLog::query()->whereDate('received_at', today())->count(),
+            'clients_count' => $clients->count(),
+            'total' => $allServices->count(),
+            'online' => $allServices->filter(fn ($s) => $s->computed_status === 'ok')->count(),
+            'attention' => $allServices->filter(fn ($s) => in_array($s->computed_status, ['failed', 'overdue', 'unknown']))->count(),
+            'logs_today' => ServiceLog::query()->whereDate('received_at', today())->count(),
         ];
 
-        $systemsData = $systems->map(function (System $system) {
-            return [
-                'id' => $system->id,
-                'name' => $system->name,
-                'slug' => $system->slug,
-                'external_ip' => $system->external_ip ?? 'Não informado',
-                'last_health_status' => $system->last_health_status ?? 'unknown',
-                'last_health_status_label' => match ($system->last_health_status) {
+        $clientsData = $clients->map(function (Client $client) {
+            $servicesData = $client->monitoredServices->map(function ($service) {
+                $computedStatus = $service->computed_status;
+                $deadline = $service->next_expected_at;
+                
+                $statusLabel = match ($computedStatus) {
                     'ok' => 'Operacional',
+                    'overdue' => 'Atrasado',
                     'failed' => 'Falha',
-                    default => 'Sem dados',
-                },
-                'last_health_message' => $system->last_health_message,
-                'last_health_at' => $system->last_health_at?->toIso8601String(),
-                'last_health_at_human' => $system->last_health_at?->diffForHumans() ?? 'Aguardando',
-                'last_backup_at' => $system->last_backup_at?->toIso8601String(),
-                'last_backup_at_human' => $system->last_backup_at?->diffForHumans() ?? 'Nenhum recebido',
-                'backup_logs_count' => $system->backup_logs_count,
-                'backup_logs' => $system->backupLogs->map(function (BackupLog $backup) {
-                    return [
-                        'id' => $backup->id,
-                        'original_filename' => $backup->original_filename,
-                        'file_size' => $backup->file_size,
-                        'file_size_formatted' => number_format($backup->file_size / 1024, 1, ',', '.') . ' KB',
-                        'status' => $backup->status,
-                        'received_at' => $backup->received_at?->toIso8601String(),
-                        'received_at_formatted' => $backup->received_at?->format('d/m H:i') ?? '-',
-                    ];
-                }),
+                    default => 'Aguardando',
+                };
+
+                return [
+                    'id' => $service->id,
+                    'name' => $service->name,
+                    'slug' => $service->slug,
+                    'interval_minutes' => $service->expected_interval_minutes,
+                    'grace_minutes' => $service->grace_period_minutes,
+                    'notification_emails' => $service->notification_emails,
+                    'computed_status' => $computedStatus,
+                    'status_label' => $statusLabel,
+                    'is_overdue' => $service->is_overdue,
+                    'last_message' => $service->last_message,
+                    'last_duration_seconds' => $service->last_duration_seconds,
+                    'last_duration_formatted' => $service->last_duration_seconds !== null ? "{$service->last_duration_seconds}s" : null,
+                    'last_ip' => $service->last_ip ?? 'Não detectado',
+                    'last_ping_at' => $service->last_ping_at?->toIso8601String(),
+                    'last_ping_at_formatted' => $service->last_ping_at?->format('d/m/Y H:i:s') ?? 'Nunca',
+                    'last_ping_at_human' => $service->last_ping_at?->diffForHumans() ?? 'Nunca',
+                    'next_expected_at' => $deadline?->toIso8601String(),
+                    'next_expected_at_human' => $deadline ? ($service->is_overdue ? 'Atrasado há ' . $deadline->diffForHumans(null, true) : 'Previsto ' . $deadline->diffForHumans()) : 'Sem periodicidade',
+                    'logs_count' => $service->serviceLogs->count(),
+                    'logs' => $service->serviceLogs->map(function (ServiceLog $log) use ($service) {
+                        return [
+                            'id' => $log->id,
+                            'status' => $log->status,
+                            'filename' => $log->original_filename,
+                            'file_size' => $log->file_size,
+                            'file_size_formatted' => number_format($log->file_size / 1024, 1, ',', '.') . ' KB',
+                            'log_excerpt' => $log->log_excerpt,
+                            'download_url' => route('api.services.logs.download', ['service' => $service->id, 'log' => $log->id]),
+                            'received_at' => $log->received_at?->toIso8601String(),
+                            'received_at_formatted' => $log->received_at?->format('d/m/Y H:i:s') ?? '-',
+                        ];
+                    }),
+                ];
+            });
+
+            return [
+                'id' => $client->id,
+                'name' => $client->name,
+                'slug' => $client->slug,
+                'services_count' => $client->monitoredServices->count(),
+                'has_alerts' => $client->monitoredServices->contains(fn ($s) => in_array($s->computed_status, ['failed', 'overdue'])),
+                'services' => $servicesData,
             ];
         });
 
         return response()->json([
             'metrics' => $metrics,
-            'systems' => $systemsData,
+            'clients' => $clientsData,
             'server_time' => now()->format('d/m/Y H:i:s'),
             'updated_at' => now()->toIso8601String(),
         ]);

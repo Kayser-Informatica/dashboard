@@ -3,12 +3,18 @@ set -e
 
 echo "==> Starting entrypoint..."
 
-# Cache configuration for production
-echo "==> Caching configuration..."
-php artisan config:cache
-php artisan route:cache
-php artisan view:cache
-php artisan event:cache
+if [ "$APP_ENV" = "production" ]; then
+    echo "==> Caching configuration for production..."
+    php artisan config:cache
+    php artisan route:cache
+    php artisan view:cache
+    php artisan event:cache
+else
+    echo "==> Clearing caches for local development..."
+    php artisan config:clear || true
+    php artisan route:clear || true
+    php artisan view:clear || true
+fi
 
 # Run migrations
 echo "==> Running migrations..."

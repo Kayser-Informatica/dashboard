@@ -3,24 +3,24 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="Painel de monitoramento operacional de sistemas e backups em tempo real.">
-    <title>Systems Control | Painel Operacional</title>
+    <meta name="description" content="Painel operacional de monitoramento de clientes, serviços, heartbeats e logs.">
+    <title>Systems Control | Monitoramento de Clientes e Serviços</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-base: #0c1219;
-            --bg-surface: #141c26;
-            --bg-surface-elevated: #1b2634;
-            --bg-card-head: #182230;
-            --bg-meta: #101722;
+            --bg-base: #0a0f16;
+            --bg-surface: #111822;
+            --bg-surface-elevated: #16202c;
+            --bg-card-head: #141c27;
+            --bg-meta: #0d131b;
             
-            --ink: #f0f6fc;
-            --ink-muted: #8b99a8;
-            --ink-subtle: #576575;
-            --line: #223041;
-            --line-light: #2c3e53;
+            --ink: #f1f5f9;
+            --ink-muted: #94a3b8;
+            --ink-subtle: #64748b;
+            --line: #1e293b;
+            --line-light: #334155;
 
             --emerald: #10b981;
             --emerald-glow: rgba(16, 185, 129, 0.25);
@@ -38,34 +38,32 @@
             --cyan-glow: rgba(6, 182, 212, 0.25);
             --cyan-bg: rgba(6, 182, 212, 0.12);
 
-            --radius-sm: 8px;
-            --radius-md: 14px;
-            --radius-lg: 18px;
-            --shadow-card: 0 10px 30px -10px rgba(0, 0, 0, 0.5), 0 0 1px 1px rgba(255, 255, 255, 0.05);
+            --radius-sm: 6px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --shadow-card: 0 10px 25px -5px rgba(0, 0, 0, 0.5), 0 0 1px 1px rgba(255, 255, 255, 0.05);
         }
 
         * { box-sizing: border-box; }
 
         html, body {
-            height: 100vh;
+            min-height: 100vh;
             margin: 0;
             padding: 0;
-            overflow: hidden;
             background-color: var(--bg-base);
             color: var(--ink);
             font-family: 'Plus Jakarta Sans', ui-sans-serif, system-ui, -apple-system, sans-serif;
             -webkit-font-smoothing: antialiased;
         }
 
-        /* Fullscreen monitor layout */
         .app-shell {
-            height: 100vh;
             display: flex;
             flex-direction: column;
-            padding: 20px 28px 16px;
-            gap: 16px;
+            padding: 20px 28px 24px;
+            gap: 18px;
             max-width: 1920px;
             margin: 0 auto;
+            min-height: 100vh;
         }
 
         /* Top Header */
@@ -74,9 +72,8 @@
             align-items: center;
             justify-content: space-between;
             gap: 20px;
-            padding-bottom: 12px;
+            padding-bottom: 14px;
             border-bottom: 1px solid var(--line);
-            flex-shrink: 0;
         }
 
         .brand-group {
@@ -89,13 +86,13 @@
             width: 44px;
             height: 44px;
             border-radius: var(--radius-md);
-            background: linear-gradient(135deg, #0d9488 0%, #0284c7 100%);
+            background: linear-gradient(135deg, #0284c7 0%, #6366f1 100%);
             display: grid;
             place-items: center;
             font-weight: 800;
             font-size: 17px;
             color: #ffffff;
-            box-shadow: 0 0 20px rgba(13, 148, 136, 0.4);
+            box-shadow: 0 0 20px rgba(99, 102, 241, 0.4);
             letter-spacing: -0.05em;
         }
 
@@ -128,7 +125,6 @@
             margin-top: 2px;
         }
 
-        /* Center Clock in Monitor */
         .clock-widget {
             display: flex;
             align-items: center;
@@ -141,7 +137,7 @@
 
         .clock-time {
             font-family: 'JetBrains Mono', monospace;
-            font-size: 20px;
+            font-size: 18px;
             font-weight: 700;
             color: #ffffff;
             letter-spacing: 0.05em;
@@ -155,7 +151,6 @@
             padding-left: 14px;
         }
 
-        /* Header Right Controls */
         .header-actions {
             display: flex;
             align-items: center;
@@ -166,31 +161,15 @@
             display: flex;
             align-items: center;
             gap: 9px;
-            padding: 8px 15px;
+            padding: 7px 14px;
             border-radius: 999px;
             font-size: 12px;
             font-weight: 700;
             background: var(--bg-surface);
             border: 1px solid var(--line);
-            transition: all 0.3s ease;
-        }
-
-        .live-badge--online {
             color: #34d399;
             border-color: rgba(52, 211, 153, 0.3);
             background: rgba(16, 185, 129, 0.08);
-        }
-
-        .live-badge--syncing {
-            color: #38bdf8;
-            border-color: rgba(56, 189, 248, 0.3);
-            background: rgba(14, 165, 233, 0.08);
-        }
-
-        .live-badge--error {
-            color: #fb7185;
-            border-color: rgba(251, 113, 133, 0.35);
-            background: rgba(244, 63, 94, 0.12);
         }
 
         .pulse-dot {
@@ -214,47 +193,57 @@
             animation: pulse-ring 2s cubic-bezier(0.24, 0, 0.38, 1) infinite;
         }
 
+        .countdown-widget {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            background: var(--bg-surface);
+            border: 1px solid var(--line);
+            padding: 6px 14px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--ink-muted);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .countdown-label {
+            font-size: 11px;
+            color: var(--ink-subtle);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .countdown-seconds {
+            color: #38bdf8;
+            font-weight: 700;
+            font-size: 13px;
+            min-width: 24px;
+            text-align: right;
+        }
+
+        .countdown-icon {
+            font-size: 13px;
+            color: #38bdf8;
+            display: inline-block;
+            transition: transform 0.5s ease;
+        }
+
+        .countdown-icon.spinning {
+            transform: rotate(360deg);
+        }
+
         @keyframes pulse-ring {
             0% { transform: scale(0.6); opacity: 0.8; }
             70% { transform: scale(1.8); opacity: 0; }
             100% { transform: scale(1.8); opacity: 0; }
         }
 
-        .sync-progress-wrap {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 11px;
-            color: var(--ink-muted);
-            font-family: 'JetBrains Mono', monospace;
-        }
-
-        .btn-fullscreen {
-            background: var(--bg-surface);
-            border: 1px solid var(--line);
-            color: var(--ink-muted);
-            border-radius: var(--radius-sm);
-            padding: 7px 11px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 14px;
-            transition: all 0.2s;
-        }
-
-        .btn-fullscreen:hover {
-            color: #ffffff;
-            border-color: var(--line-light);
-            background: var(--bg-surface-elevated);
-        }
-
         /* Metrics Row */
         .metrics-grid {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
+            grid-template-columns: repeat(5, 1fr);
             gap: 14px;
-            flex-shrink: 0;
         }
 
         .metric-card {
@@ -281,6 +270,7 @@
             background: transparent;
         }
 
+        .metric-card--clients::before { background: linear-gradient(90deg, #8b5cf6, #d946ef); }
         .metric-card--total::before { background: linear-gradient(90deg, #3b82f6, #6366f1); }
         .metric-card--online::before { background: linear-gradient(90deg, #10b981, #34d399); }
         .metric-card--attention::before { background: linear-gradient(90deg, #f59e0b, #ef4444); }
@@ -295,14 +285,9 @@
         .metric-label {
             font-size: 11px;
             font-weight: 700;
-            letter-spacing: 0.1em;
+            letter-spacing: 0.08em;
             text-transform: uppercase;
             color: var(--ink-muted);
-        }
-
-        .metric-icon {
-            font-size: 14px;
-            color: var(--ink-subtle);
         }
 
         .metric-value-row {
@@ -313,7 +298,7 @@
         }
 
         .metric-value {
-            font-size: 38px;
+            font-size: 34px;
             font-weight: 800;
             line-height: 1;
             letter-spacing: -0.04em;
@@ -321,6 +306,7 @@
             font-variant-numeric: tabular-nums;
         }
 
+        .metric-card--clients .metric-value { color: #c084fc; }
         .metric-card--online .metric-value { color: #34d399; }
         .metric-card--attention .metric-value { color: #fbbf24; }
         .metric-card--attention.has-attention .metric-value { color: #f87171; }
@@ -332,200 +318,252 @@
             margin-top: 6px;
         }
 
-        /* Systems Section */
-        .systems-wrapper {
-            flex: 1;
-            min-height: 0;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        .section-bar {
+        /* Controls & Filter Bar */
+        .filter-bar {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            flex-shrink: 0;
+            gap: 16px;
+            background: var(--bg-surface);
+            padding: 12px 18px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--line);
         }
 
-        .section-title-group {
+        .search-box {
+            position: relative;
+            flex: 1;
+            max-width: 420px;
+        }
+
+        .search-input {
+            width: 100%;
+            background: var(--bg-meta);
+            border: 1px solid var(--line);
+            color: #fff;
+            padding: 8px 14px 8px 36px;
+            border-radius: var(--radius-sm);
+            font-size: 13px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .search-input:focus {
+            border-color: #38bdf8;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--ink-subtle);
+            font-size: 13px;
+        }
+
+        .filter-tabs {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
         }
 
-        .section-title {
-            margin: 0;
-            font-size: 15px;
-            font-weight: 700;
-            letter-spacing: -0.01em;
-            color: #ffffff;
-        }
-
-        .section-badge {
-            background: var(--bg-surface);
+        .filter-btn {
+            background: var(--bg-meta);
             border: 1px solid var(--line);
             color: var(--ink-muted);
-            font-size: 11px;
-            font-weight: 600;
-            padding: 2px 8px;
-            border-radius: 999px;
-        }
-
-        .section-meta-text {
             font-size: 12px;
-            color: var(--ink-subtle);
+            font-weight: 600;
+            padding: 6px 14px;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: all 0.2s;
         }
 
-        /* Systems Grid Viewport with Scroll */
-        .systems-scroll-area {
-            flex: 1;
-            min-height: 0;
-            overflow-y: auto;
-            padding-right: 4px;
+        .filter-btn:hover {
+            color: #fff;
+            border-color: var(--line-light);
         }
 
-        /* Custom subtle scrollbar */
-        .systems-scroll-area::-webkit-scrollbar {
-            width: 6px;
-        }
-        .systems-scroll-area::-webkit-scrollbar-track {
-            background: var(--bg-base);
-        }
-        .systems-scroll-area::-webkit-scrollbar-thumb {
-            background: var(--line-light);
-            border-radius: 4px;
+        .filter-btn.active {
+            background: rgba(14, 165, 233, 0.15);
+            color: #38bdf8;
+            border-color: rgba(56, 189, 248, 0.4);
         }
 
-        .systems-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(460px, 1fr));
-            gap: 16px;
-            padding-bottom: 8px;
+        /* Clients & Services Container */
+        .clients-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
         }
 
-        /* System Card */
-        .system-card {
+        .client-section {
             background: var(--bg-surface);
             border: 1px solid var(--line);
             border-radius: var(--radius-lg);
             overflow: hidden;
             box-shadow: var(--shadow-card);
-            display: flex;
-            flex-direction: column;
-            transition: border-color 0.2s, transform 0.2s;
         }
 
-        .system-card:hover {
-            border-color: var(--line-light);
-        }
-
-        .system-card-head {
+        .client-header {
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            gap: 16px;
-            padding: 16px 20px;
+            justify-content: space-between;
+            padding: 16px 22px;
             background: var(--bg-card-head);
             border-bottom: 1px solid var(--line);
         }
 
-        .system-identity {
+        .client-title-row {
             display: flex;
             align-items: center;
             gap: 12px;
-            min-width: 0;
         }
 
-        .system-name {
-            margin: 0;
-            font-size: 17px;
+        .client-avatar {
+            width: 34px;
+            height: 34px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #3b82f6, #06b6d4);
+            display: grid;
+            place-items: center;
+            font-weight: 700;
+            font-size: 14px;
+            color: #fff;
+        }
+
+        .client-name {
+            font-size: 18px;
             font-weight: 700;
             color: #ffffff;
-            letter-spacing: -0.02em;
+            margin: 0;
+        }
+
+        .client-slug {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            color: var(--ink-subtle);
+            background: var(--bg-base);
+            padding: 2px 8px;
+            border-radius: 4px;
+            border: 1px solid var(--line);
+        }
+
+        .client-services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(480px, 1fr));
+            gap: 16px;
+            padding: 20px;
+        }
+
+        /* Service Card */
+        .service-card {
+            background: var(--bg-surface-elevated);
+            border: 1px solid var(--line);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            transition: all 0.2s ease;
+        }
+
+        .service-card:hover {
+            border-color: var(--line-light);
+        }
+
+        .service-card-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 18px;
+            background: var(--bg-meta);
+            border-bottom: 1px solid var(--line);
+            gap: 12px;
+        }
+
+        .service-name {
+            font-size: 15px;
+            font-weight: 700;
+            color: #ffffff;
+            margin: 0;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
         }
 
-        .system-slug {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 11px;
-            color: var(--ink-muted);
-            background: var(--bg-base);
-            padding: 2px 7px;
-            border-radius: var(--radius-sm);
-            border: 1px solid var(--line);
-            white-space: nowrap;
-        }
-
-        /* Status badges */
+        /* Badges */
         .status-chip {
             display: inline-flex;
             align-items: center;
-            gap: 7px;
-            padding: 6px 12px;
+            gap: 6px;
+            padding: 5px 12px;
             border-radius: 999px;
             font-size: 11px;
             font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 0.06em;
+            letter-spacing: 0.05em;
             white-space: nowrap;
-            flex-shrink: 0;
         }
 
         .status-chip::before {
             content: '';
-            width: 7px;
-            height: 7px;
+            width: 6px;
+            height: 6px;
             border-radius: 50%;
             background-color: currentColor;
         }
 
-        .status--ok, .status--success {
+        .status--ok {
             color: #34d399;
             background: var(--emerald-bg);
             border: 1px solid rgba(52, 211, 153, 0.25);
         }
 
-        .status--failed {
-            color: #f87171;
-            background: var(--rose-bg);
-            border: 1px solid rgba(248, 113, 113, 0.3);
+        .status--overdue {
+            color: #fb923c;
+            background: rgba(251, 146, 60, 0.15);
+            border: 1px solid rgba(251, 146, 60, 0.35);
             animation: pulse-border 1.8s infinite;
         }
 
-        @keyframes pulse-border {
-            0%, 100% { box-shadow: 0 0 0 0 rgba(248, 113, 113, 0.4); }
-            50% { box-shadow: 0 0 0 4px rgba(248, 113, 113, 0); }
+        .status--failed {
+            color: #f87171;
+            background: var(--rose-bg);
+            border: 1px solid rgba(248, 113, 113, 0.35);
+            animation: pulse-border 1.8s infinite;
         }
 
-        .status--unknown, .status--warning, .status--received {
+        .status--unknown {
             color: #fbbf24;
             background: var(--amber-bg);
             border: 1px solid rgba(251, 191, 36, 0.25);
         }
 
+        @keyframes pulse-border {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(244, 63, 94, 0.4); }
+            50% { box-shadow: 0 0 0 4px rgba(244, 63, 94, 0); }
+        }
+
         /* Meta Grid */
-        .system-meta-grid {
+        .service-meta-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 12px;
-            padding: 12px 20px;
-            background: var(--bg-meta);
+            gap: 10px;
+            padding: 12px 18px;
+            background: rgba(0, 0, 0, 0.15);
             border-bottom: 1px solid var(--line);
         }
 
         .meta-item {
             display: flex;
             flex-direction: column;
-            gap: 4px;
+            gap: 3px;
         }
 
         .meta-label {
             font-size: 10px;
             font-weight: 700;
-            letter-spacing: 0.08em;
+            letter-spacing: 0.06em;
             text-transform: uppercase;
             color: var(--ink-subtle);
         }
@@ -539,72 +577,60 @@
             text-overflow: ellipsis;
         }
 
-        .meta-ip {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 11px;
+        .meta-value--highlight {
             color: #38bdf8;
+            font-family: 'JetBrains Mono', monospace;
         }
 
-        /* Healthcheck message alert banner */
-        .health-message-banner {
-            padding: 8px 20px;
+        .meta-value--alert {
+            color: #f87171;
+            font-weight: 700;
+        }
+
+        /* Alert Banner */
+        .service-alert-banner {
+            padding: 8px 18px;
             font-size: 11px;
-            background: rgba(244, 63, 94, 0.1);
-            border-bottom: 1px solid rgba(244, 63, 94, 0.2);
+            background: rgba(244, 63, 94, 0.12);
+            border-bottom: 1px solid rgba(244, 63, 94, 0.25);
             color: #fca5a5;
             display: flex;
             align-items: center;
             gap: 8px;
         }
 
-        /* Backups Area */
-        .backups-area {
-            padding: 14px 20px 16px;
+        /* Logs Area */
+        .service-logs-area {
+            padding: 12px 18px 16px;
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 8px;
         }
 
-        .backups-heading {
+        .logs-heading {
             display: flex;
             align-items: center;
             justify-content: space-between;
-        }
-
-        .backups-heading h4 {
-            margin: 0;
-            font-size: 12px;
+            font-size: 11px;
             font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 0.06em;
+            letter-spacing: 0.05em;
             color: var(--ink-muted);
         }
 
-        .backups-count {
-            font-size: 11px;
-            color: var(--ink-subtle);
-            font-family: 'JetBrains Mono', monospace;
-        }
-
-        .backups-list {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
-
-        .backup-row {
+        .log-row {
             display: grid;
             grid-template-columns: 1fr auto auto auto;
             align-items: center;
-            gap: 12px;
-            padding: 7px 10px;
-            background: var(--bg-card-head);
+            gap: 10px;
+            padding: 6px 10px;
+            background: var(--bg-meta);
             border: 1px solid var(--line);
             border-radius: var(--radius-sm);
             font-size: 11px;
         }
 
-        .backup-file {
+        .log-file {
             font-family: 'JetBrains Mono', monospace;
             color: #e2e8f0;
             overflow: hidden;
@@ -612,128 +638,166 @@
             white-space: nowrap;
         }
 
-        .backup-date {
+        .log-date {
             color: var(--ink-muted);
             white-space: nowrap;
         }
 
-        .backup-size {
-            color: var(--ink-muted);
-            font-family: 'JetBrains Mono', monospace;
-            white-space: nowrap;
+        .log-actions {
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
 
-        .backup-tag {
-            font-size: 9px;
-            font-weight: 700;
-            letter-spacing: 0.05em;
-            text-transform: uppercase;
-            padding: 2px 6px;
+        .btn-log-action {
+            background: var(--bg-surface);
+            border: 1px solid var(--line);
+            color: var(--ink-muted);
             border-radius: 4px;
-            white-space: nowrap;
+            padding: 3px 8px;
+            font-size: 10px;
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.2s;
         }
 
-        .backup-tag--success {
-            color: #34d399;
-            background: rgba(16, 185, 129, 0.15);
+        .btn-log-action:hover {
+            color: #fff;
+            border-color: #38bdf8;
+            background: rgba(14, 165, 233, 0.15);
         }
 
-        .backup-tag--failed {
-            color: #f87171;
-            background: rgba(244, 63, 94, 0.15);
-        }
-
-        .backup-tag--warning, .backup-tag--received {
-            color: #fbbf24;
-            background: rgba(245, 158, 11, 0.15);
-        }
-
-        .empty-backups {
-            padding: 12px;
+        .empty-logs {
+            padding: 10px;
             text-align: center;
             color: var(--ink-subtle);
             font-size: 11px;
-            background: var(--bg-card-head);
+            background: var(--bg-meta);
             border: 1px dashed var(--line);
             border-radius: var(--radius-sm);
         }
 
-        /* Empty Dashboard State */
+        /* Modal Log Viewer */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(4px);
+            display: none;
+            place-items: center;
+            z-index: 1000;
+            padding: 20px;
+        }
+
+        .modal-overlay.active {
+            display: grid;
+        }
+
+        .modal-content {
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: var(--radius-lg);
+            width: 100%;
+            max-width: 800px;
+            max-height: 85vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+        }
+
+        .modal-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 20px;
+            border-bottom: 1px solid #1e293b;
+        }
+
+        .modal-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: #fff;
+            margin: 0;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .modal-close {
+            background: transparent;
+            border: none;
+            color: var(--ink-muted);
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        .modal-body {
+            padding: 20px;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .log-terminal {
+            background: #090d16;
+            color: #38bdf8;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            line-height: 1.6;
+            padding: 16px;
+            border-radius: 8px;
+            border: 1px solid #1e293b;
+            white-space: pre-wrap;
+            word-break: break-all;
+            max-height: 50vh;
+            overflow-y: auto;
+        }
+
+        .modal-foot {
+            padding: 14px 20px;
+            border-top: 1px solid #1e293b;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        /* Empty State */
         .empty-dashboard {
             padding: 60px 20px;
             text-align: center;
             background: var(--bg-surface);
             border: 1px dashed var(--line);
             border-radius: var(--radius-lg);
-            margin: auto 0;
         }
 
-        .empty-dashboard h3 {
-            margin: 0 0 8px;
-            font-size: 18px;
-            color: #ffffff;
-        }
+        .empty-dashboard h3 { margin: 0 0 8px; color: #fff; }
+        .empty-dashboard p { color: var(--ink-muted); font-size: 13px; max-width: 480px; margin: 0 auto; line-height: 1.5; }
 
-        .empty-dashboard p {
-            margin: 0 auto;
-            max-width: 440px;
-            color: var(--ink-muted);
-            font-size: 13px;
-            line-height: 1.5;
-        }
-
-        /* Bottom Status Footer */
-        .footer {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding-top: 10px;
-            border-top: 1px solid var(--line);
-            color: var(--ink-subtle);
-            font-size: 11px;
-            flex-shrink: 0;
-        }
-
-        .footer-left {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .footer-right {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            font-family: 'JetBrains Mono', monospace;
-        }
-
-        /* Responsive breakpoints */
         @media (max-width: 1200px) {
-            .metrics-grid { grid-template-columns: repeat(2, 1fr); }
-            .systems-grid { grid-template-columns: 1fr; }
+            .metrics-grid { grid-template-columns: repeat(3, 1fr); }
+            .client-services-grid { grid-template-columns: 1fr; }
         }
 
         @media (max-width: 768px) {
-            html, body { overflow: auto; height: auto; }
-            .app-shell { height: auto; }
-            .header { flex-direction: column; align-items: flex-start; }
-            .clock-widget { width: 100%; justify-content: space-between; }
             .metrics-grid { grid-template-columns: 1fr; }
+            .header { flex-direction: column; align-items: flex-start; }
+            .filter-bar { flex-direction: column; align-items: stretch; }
         }
     </style>
 </head>
 <body>
     <div class="app-shell">
-        <!-- Header for Monitor -->
+        <!-- Top Header -->
         <header class="header">
             <div class="brand-group">
                 <div class="brand-logo">SC</div>
                 <div>
                     <div class="brand-title">
                         Systems Control
-                        <span class="brand-badge">NOC</span>
+                        <span class="brand-badge">HEARTBEAT NOC</span>
                     </div>
-                    <div class="brand-sub">Painel Operacional de Monitoramento</div>
+                    <div class="brand-sub">Monitoramento de Clientes, Serviços & Periodicidade</div>
                 </div>
             </div>
 
@@ -743,393 +807,453 @@
             </div>
 
             <div class="header-actions">
-                <div class="sync-progress-wrap">
-                    <span id="sync-timer-label">Auto-refresh 15s</span>
+                <div class="countdown-widget" id="countdown-widget" title="Tempo restante até a próxima atualização automática">
+                    <span class="countdown-icon" id="countdown-icon">↻</span>
+                    <span class="countdown-label">Refresh em</span>
+                    <span class="countdown-seconds" id="countdown-seconds">{{ $refreshInterval ?? 30 }}s</span>
                 </div>
-                <div class="live-badge live-badge--online" id="connection-status-badge">
+
+                <div class="live-badge" id="connection-status-badge">
                     <span class="pulse-dot"></span>
                     <span id="connection-status-text">Monitoramento ativo</span>
                 </div>
-                <button class="btn-fullscreen" id="btn-fullscreen" title="Alternar Tela Cheia" onclick="toggleFullscreen()">
-                    ⛶
-                </button>
             </div>
         </header>
 
         <!-- KPI Metrics Row -->
         <section class="metrics-grid" aria-label="Indicadores operacionais">
+            <article class="metric-card metric-card--clients">
+                <div class="metric-header">
+                    <span class="metric-label">Clientes</span>
+                    <span>🏢</span>
+                </div>
+                <div class="metric-value-row">
+                    <span class="metric-value" id="metric-clients">{{ $metrics['clients_count'] }}</span>
+                </div>
+                <div class="metric-note">Empresas monitoradas</div>
+            </article>
+
             <article class="metric-card metric-card--total">
                 <div class="metric-header">
-                    <span class="metric-label">Sistemas monitorados</span>
-                    <span class="metric-icon">▣</span>
+                    <span class="metric-label">Total Serviços</span>
+                    <span>▣</span>
                 </div>
                 <div class="metric-value-row">
                     <span class="metric-value" id="metric-total">{{ $metrics['total'] }}</span>
                 </div>
-                <div class="metric-note">Serviços registrados</div>
+                <div class="metric-note">Rotinas & Heartbeats</div>
             </article>
 
             <article class="metric-card metric-card--online">
                 <div class="metric-header">
                     <span class="metric-label">Operacionais</span>
-                    <span class="metric-icon">●</span>
+                    <span>●</span>
                 </div>
                 <div class="metric-value-row">
                     <span class="metric-value" id="metric-online">{{ $metrics['online'] }}</span>
                 </div>
-                <div class="metric-note">Healthcheck status OK</div>
+                <div class="metric-note">Dentro do prazo combinado</div>
             </article>
 
             <article class="metric-card metric-card--attention {{ $metrics['attention'] > 0 ? 'has-attention' : '' }}">
                 <div class="metric-header">
-                    <span class="metric-label">Atenção / Falhas</span>
-                    <span class="metric-icon">▲</span>
+                    <span class="metric-label">Atrasados / Falhas</span>
+                    <span>▲</span>
                 </div>
                 <div class="metric-value-row">
                     <span class="metric-value" id="metric-attention">{{ $metrics['attention'] }}</span>
                 </div>
-                <div class="metric-note">Falhas ou sem resposta</div>
+                <div class="metric-note">Requerem ação imediata</div>
             </article>
 
             <article class="metric-card metric-card--backups">
                 <div class="metric-header">
-                    <span class="metric-label">Backups hoje</span>
-                    <span class="metric-icon">▤</span>
+                    <span class="metric-label">Logs Recebidos</span>
+                    <span>▤</span>
                 </div>
                 <div class="metric-value-row">
-                    <span class="metric-value" id="metric-backups">{{ $metrics['backups'] }}</span>
+                    <span class="metric-value" id="metric-logs-today">{{ $metrics['logs_today'] }}</span>
                 </div>
-                <div class="metric-note">Logs gravados hoje</div>
+                <div class="metric-note">Arquivos gravados hoje</div>
             </article>
         </section>
 
-        <!-- Systems & Backups Section -->
-        <section class="systems-wrapper" aria-labelledby="systems-title">
-            <div class="section-bar">
-                <div class="section-title-group">
-                    <h2 class="section-title" id="systems-title">Status dos Sistemas e Backups</h2>
-                    <span class="section-badge" id="systems-count-badge">{{ $systems->count() }} sistema(s)</span>
-                </div>
-                <div class="section-meta-text">
-                    Sincronização em tempo real via API
-                </div>
+        <!-- Search and Filter Bar -->
+        <div class="filter-bar">
+            <div class="search-box">
+                <span class="search-icon">🔍</span>
+                <input type="text" id="search-input" class="search-input" placeholder="Filtrar por cliente ou serviço..." onkeyup="filterServices()">
             </div>
+            <div class="filter-tabs">
+                <button class="filter-btn active" data-filter="all" onclick="setFilter('all')">Todos</button>
+                <button class="filter-btn" data-filter="alerts" onclick="setFilter('alerts')">🔴 Com Alertas</button>
+                <button class="filter-btn" data-filter="ok" onclick="setFilter('ok')">🟢 Saudáveis</button>
+            </div>
+        </div>
 
-            <div class="systems-scroll-area">
-                <div class="systems-grid" id="systems-container">
-                    @if ($systems->isEmpty())
-                        <div class="empty-dashboard" id="empty-state-card" style="grid-column: 1 / -1;">
-                            <h3>Nenhum sistema recebido ainda</h3>
-                            <p>Envie o primeiro healthcheck pela API para que os indicadores e backups apareçam automaticamente nesta tela.</p>
+        <!-- Clients & Services Area -->
+        <main class="clients-container" id="clients-container">
+            @forelse($clients as $client)
+                <section class="client-section" data-client-id="{{ $client->id }}" data-client-name="{{ strtolower($client->name) }}">
+                    <div class="client-header">
+                        <div class="client-title-row">
+                            <div class="client-avatar">{{ strtoupper(substr($client->name, 0, 2)) }}</div>
+                            <div>
+                                <h2 class="client-name">{{ $client->name }}</h2>
+                                <span class="client-slug">{{ $client->slug }}</span>
+                            </div>
                         </div>
-                    @else
-                        @foreach ($systems as $system)
-                            <article class="system-card" id="system-card-{{ $system->slug }}" data-slug="{{ $system->slug }}">
-                                <div class="system-card-head">
-                                    <div class="system-identity">
-                                        <h3 class="system-name">{{ $system->name }}</h3>
-                                        <span class="system-slug">/{{ $system->slug }}</span>
-                                    </div>
-                                    <span class="status-chip status--{{ $system->last_health_status }}">
-                                        {{ match ($system->last_health_status) { 'ok' => 'Operacional', 'failed' => 'Falha', default => 'Sem dados' } }}
-                                    </span>
+                        <div class="client-badge-group">
+                            <span class="brand-badge">{{ $client->monitoredServices->count() }} serviço(s)</span>
+                        </div>
+                    </div>
+
+                    <div class="client-services-grid">
+                        @forelse($client->monitoredServices as $service)
+                            @php
+                                $status = $service->computed_status;
+                                $statusClass = match($status) {
+                                    'ok' => 'status--ok',
+                                    'overdue' => 'status--overdue',
+                                    'failed' => 'status--failed',
+                                    default => 'status--unknown',
+                                };
+                                $statusLabel = match($status) {
+                                    'ok' => 'Operacional',
+                                    'overdue' => 'Atrasado',
+                                    'failed' => 'Falha',
+                                    default => 'Aguardando',
+                                };
+                            @endphp
+
+                            <article class="service-card" data-service-name="{{ strtolower($service->name) }}" data-status="{{ $status }}">
+                                <div class="service-card-head">
+                                    <h3 class="service-name" title="{{ $service->name }}">{{ $service->name }}</h3>
+                                    <span class="status-chip {{ $statusClass }}">{{ $statusLabel }}</span>
                                 </div>
 
-                                @if ($system->last_health_status === 'failed' && $system->last_health_message)
-                                    <div class="health-message-banner">
-                                        <span>⚠️ {{ $system->last_health_message }}</span>
+                                <div class="service-meta-grid">
+                                    <div class="meta-item">
+                                        <span class="meta-label">Periodicidade</span>
+                                        <span class="meta-value">{{ $service->expected_interval_minutes }} min (tol: {{ $service->grace_period_minutes }}m)</span>
+                                    </div>
+                                    <div class="meta-item">
+                                        <span class="meta-label">Último Ping</span>
+                                        <span class="meta-value">{{ $service->last_ping_at ? $service->last_ping_at->format('d/m/Y H:i:s') . ' (' . $service->last_ping_at->diffForHumans() . ')' : 'Nunca' }}</span>
+                                    </div>
+                                    <div class="meta-item">
+                                        <span class="meta-label">Previsão / Prazo</span>
+                                        @if($service->is_overdue)
+                                            <span class="meta-value meta-value--alert">Atrasado há {{ $service->next_expected_at?->diffForHumans(null, true) }}</span>
+                                        @elseif($service->next_expected_at)
+                                            <span class="meta-value meta-value--highlight">{{ $service->next_expected_at->diffForHumans() }}</span>
+                                        @else
+                                            <span class="meta-value">-</span>
+                                        @endif
+                                    </div>
+                                </div>
+
+                                @if($service->last_message || $status === 'overdue' || $status === 'failed')
+                                    <div class="service-alert-banner">
+                                        <span>⚠️</span>
+                                        <span>{{ $service->last_message ?: ($status === 'overdue' ? 'Não enviou sinal de vida no intervalo combinado!' : 'Falha reportada pelo script.') }}</span>
                                     </div>
                                 @endif
 
-                                <div class="system-meta-grid">
-                                    <div class="meta-item">
-                                        <span class="meta-label">IP Externo</span>
-                                        <span class="meta-value meta-ip">{{ $system->external_ip ?? 'Não informado' }}</span>
+                                <div class="service-logs-area">
+                                    <div class="logs-heading">
+                                        <span>Últimos Logs Recebidos</span>
+                                        <span>{{ $service->serviceLogs->count() }} log(s)</span>
                                     </div>
-                                    <div class="meta-item">
-                                        <span class="meta-label">Último healthcheck</span>
-                                        <span class="meta-value">{{ $system->last_health_at?->diffForHumans() ?? 'Aguardando' }}</span>
-                                    </div>
-                                    <div class="meta-item">
-                                        <span class="meta-label">Último backup</span>
-                                        <span class="meta-value">{{ $system->last_backup_at?->diffForHumans() ?? 'Nenhum recebido' }}</span>
-                                    </div>
-                                </div>
 
-                                <div class="backups-area">
-                                    <div class="backups-heading">
-                                        <h4>Backups recentes</h4>
-                                        <span class="backups-count">{{ $system->backup_logs_count }} registro(s)</span>
-                                    </div>
-                                    @if ($system->backupLogs->isEmpty())
-                                        <div class="empty-backups">Nenhum log de backup recebido.</div>
-                                    @else
-                                        <div class="backups-list">
-                                            @foreach ($system->backupLogs as $backup)
-                                                <div class="backup-row">
-                                                    <span class="backup-file" title="{{ $backup->original_filename }}">{{ $backup->original_filename }}</span>
-                                                    <span class="backup-date">{{ $backup->received_at->format('d/m H:i') }}</span>
-                                                    <span class="backup-size">{{ number_format($backup->file_size / 1024, 1, ',', '.') }} KB</span>
-                                                    <span class="backup-tag backup-tag--{{ $backup->status }}">{{ $backup->status }}</span>
-                                                </div>
-                                            @endforeach
+                                    @forelse($service->serviceLogs as $log)
+                                        <div class="log-row">
+                                            <span class="log-file" title="{{ $log->original_filename }}">{{ $log->original_filename ?: 'log.txt' }}</span>
+                                            <span class="log-date">{{ $log->received_at->format('d/m H:i') }}</span>
+                                            <span class="meta-value" style="font-size: 10px;">{{ number_format($log->file_size / 1024, 1) }} KB</span>
+                                            <div class="log-actions">
+                                                @if($log->log_excerpt)
+                                                    <button class="btn-log-action" onclick="showLogModal('{{ addslashes($service->name) }}', '{{ addslashes($log->original_filename) }}', '{{ base64_encode($log->log_excerpt) }}', '{{ route('api.services.logs.download', ['service' => $service->id, 'log' => $log->id]) }}')">Preview</button>
+                                                @endif
+                                                <a href="{{ route('api.services.logs.download', ['service' => $service->id, 'log' => $log->id]) }}" class="btn-log-action" target="_blank" download>Baixar</a>
+                                            </div>
                                         </div>
-                                    @endif
+                                    @empty
+                                        <div class="empty-logs">Nenhum arquivo de log anexado recentemente.</div>
+                                    @endforelse
                                 </div>
                             </article>
-                        @endforeach
-                    @endif
+                        @empty
+                            <div class="empty-logs" style="grid-column: 1 / -1;">Nenhum serviço registrado para este cliente ainda.</div>
+                        @endforelse
+                    </div>
+                </section>
+            @empty
+                <div class="empty-dashboard">
+                    <h3>Nenhum cliente ou serviço cadastrado</h3>
+                    <p>Cadastre clientes via <code>POST /api/clients/register</code> e envie os primeiros sinais de vida via <code>POST /api/heartbeat</code> para iniciar o monitoramento.</p>
                 </div>
-            </div>
-        </section>
-
-        <!-- Footer -->
-        <footer class="footer">
-            <div class="footer-left">
-                <span>Systems Control</span>
-                <span>•</span>
-                <span>Painel Contínuo para Monitor NOC</span>
-            </div>
-            <div class="footer-right">
-                <span id="last-sync-time">Última checagem: {{ now()->format('H:i:s') }}</span>
-                <span>•</span>
-                <span>Intervalo: 15s</span>
-            </div>
-        </footer>
+            @endforelse
+        </main>
     </div>
 
-    <!-- Reactive Live Engine -->
-    <script>
-        const POLL_INTERVAL_SECONDS = 15;
-        let countdown = POLL_INTERVAL_SECONDS;
-        let isFetching = false;
+    <!-- Modal Viewer -->
+    <div class="modal-overlay" id="log-modal">
+        <div class="modal-content">
+            <div class="modal-head">
+                <h4 class="modal-title" id="modal-log-title">Visualizador de Log</h4>
+                <button class="modal-close" onclick="closeLogModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="log-terminal" id="modal-log-content">Carregando log...</div>
+            </div>
+            <div class="modal-foot">
+                <a href="#" id="modal-download-btn" class="btn-log-action" style="padding: 8px 16px;" download>Baixar Arquivo Completo</a>
+                <button class="btn-log-action" style="padding: 8px 16px;" onclick="closeLogModal()">Fechar</button>
+            </div>
+        </div>
+    </div>
 
-        // Digital Clock
+    <script>
+        let currentFilter = 'all';
+
         function updateClock() {
             const now = new Date();
-            const timeStr = now.toLocaleTimeString('pt-BR', { hour12: false });
+            const timeStr = now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
             const dateStr = now.toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' });
             
-            const clockTimeEl = document.getElementById('clock-time');
-            const clockDateEl = document.getElementById('clock-date');
-            
-            if (clockTimeEl) clockTimeEl.textContent = timeStr;
-            if (clockDateEl) clockDateEl.textContent = dateStr.charAt(0).toUpperCase() + dateStr.slice(1);
+            const timeElem = document.getElementById('clock-time');
+            const dateElem = document.getElementById('clock-date');
+            if (timeElem) timeElem.textContent = timeStr;
+            if (dateElem) dateElem.textContent = dateStr.charAt(0).toUpperCase() + dateStr.slice(1);
         }
-
         setInterval(updateClock, 1000);
         updateClock();
 
-        // Fullscreen Mode Toggle
-        function toggleFullscreen() {
-            if (!document.fullscreenElement) {
-                document.documentElement.requestFullscreen().catch(err => {
-                    console.warn(`Fullscreen error: ${err.message}`);
+        function setFilter(filter) {
+            currentFilter = filter;
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.filter === filter);
+            });
+            filterServices();
+        }
+
+        function filterServices() {
+            const query = (document.getElementById('search-input')?.value || '').toLowerCase().trim();
+            const clientSections = document.querySelectorAll('.client-section');
+
+            clientSections.forEach(section => {
+                const clientName = section.dataset.clientName || '';
+                const serviceCards = section.querySelectorAll('.service-card');
+                let visibleServicesInClient = 0;
+
+                serviceCards.forEach(card => {
+                    const serviceName = card.dataset.serviceName || '';
+                    const status = card.dataset.status || '';
+
+                    const matchesQuery = clientName.includes(query) || serviceName.includes(query);
+                    let matchesFilter = true;
+
+                    if (currentFilter === 'alerts') {
+                        matchesFilter = (status === 'failed' || status === 'overdue');
+                    } else if (currentFilter === 'ok') {
+                        matchesFilter = (status === 'ok');
+                    }
+
+                    if (matchesQuery && matchesFilter) {
+                        card.style.display = 'flex';
+                        visibleServicesInClient++;
+                    } else {
+                        card.style.display = 'none';
+                    }
                 });
-            } else {
-                if (document.exitFullscreen) {
-                    document.exitFullscreen();
-                }
-            }
+
+                section.style.display = visibleServicesInClient > 0 ? 'block' : 'none';
+            });
         }
 
-        // Connection Badge State
-        function setConnectionStatus(state, message) {
-            const badge = document.getElementById('connection-status-badge');
-            const text = document.getElementById('connection-status-text');
-            if (!badge || !text) return;
-
-            badge.className = 'live-badge';
-            if (state === 'online') {
-                badge.classList.add('live-badge--online');
-                text.textContent = message || 'Monitoramento ativo';
-            } else if (state === 'syncing') {
-                badge.classList.add('live-badge--syncing');
-                text.textContent = message || 'Atualizando dados...';
-            } else if (state === 'error') {
-                badge.classList.add('live-badge--error');
-                text.textContent = message || 'Conexão perdida (reconectando...)';
+        function showLogModal(serviceName, filename, b64Content, downloadUrl) {
+            document.getElementById('modal-log-title').textContent = `${serviceName} — ${filename}`;
+            try {
+                document.getElementById('modal-log-content').textContent = decodeURIComponent(escape(atob(b64Content)));
+            } catch (e) {
+                document.getElementById('modal-log-content').textContent = atob(b64Content);
             }
+            document.getElementById('modal-download-btn').href = downloadUrl;
+            document.getElementById('log-modal').classList.add('active');
         }
 
-        // Render Systems HTML from API Data
-        function renderSystems(systems) {
-            const container = document.getElementById('systems-container');
-            const countBadge = document.getElementById('systems-count-badge');
+        function closeLogModal() {
+            document.getElementById('log-modal').classList.remove('active');
+        }
+
+        // Auto Refresh Polling com Contagem Regressiva & Renderização Dinâmica
+        const refreshInterval = {{ $refreshInterval ?? 30 }};
+        let currentCountdown = refreshInterval;
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+        }
+
+        function renderClientsList(clients) {
+            const container = document.getElementById('clients-container');
             if (!container) return;
 
-            if (countBadge) {
-                countBadge.textContent = `${systems.length} sistema(s)`;
-            }
-
-            if (!systems || systems.length === 0) {
+            if (!clients || clients.length === 0) {
                 container.innerHTML = `
-                    <div class="empty-dashboard" id="empty-state-card" style="grid-column: 1 / -1;">
-                        <h3>Nenhum sistema recebido ainda</h3>
-                        <p>Envie o primeiro healthcheck pela API para que os indicadores e backups apareçam automaticamente nesta tela.</p>
+                    <div class="empty-dashboard">
+                        <h3>Nenhum cliente ou serviço cadastrado</h3>
+                        <p>Cadastre clientes via <code>POST /api/clients/register</code> e envie os primeiros sinais de vida via <code>POST /api/heartbeat</code> para iniciar o monitoramento.</p>
                     </div>
                 `;
                 return;
             }
 
             let html = '';
-            systems.forEach(sys => {
-                const statusClass = sys.last_health_status || 'unknown';
-                const statusLabel = sys.last_health_status_label || (statusClass === 'ok' ? 'Operacional' : (statusClass === 'failed' ? 'Falha' : 'Sem dados'));
-                
-                let backupsHtml = '';
-                if (!sys.backup_logs || sys.backup_logs.length === 0) {
-                    backupsHtml = `<div class="empty-backups">Nenhum log de backup recebido.</div>`;
-                } else {
-                    backupsHtml = `<div class="backups-list">`;
-                    sys.backup_logs.forEach(bk => {
-                        backupsHtml += `
-                            <div class="backup-row">
-                                <span class="backup-file" title="${escapeHtml(bk.original_filename)}">${escapeHtml(bk.original_filename)}</span>
-                                <span class="backup-date">${escapeHtml(bk.received_at_formatted)}</span>
-                                <span class="backup-size">${escapeHtml(bk.file_size_formatted)}</span>
-                                <span class="backup-tag backup-tag--${escapeHtml(bk.status)}">${escapeHtml(bk.status)}</span>
+            clients.forEach(client => {
+                const avatar = (client.name || 'CL').substring(0, 2).toUpperCase();
+                html += `
+                    <section class="client-section" data-client-id="${client.id}" data-client-name="${escapeHtml((client.name || '').toLowerCase())}">
+                        <div class="client-header">
+                            <div class="client-title-row">
+                                <div class="client-avatar">${avatar}</div>
+                                <div>
+                                    <h2 class="client-name">${escapeHtml(client.name)}</h2>
+                                    <span class="client-slug">${escapeHtml(client.slug)}</span>
+                                </div>
                             </div>
+                            <div class="client-badge-group">
+                                <span class="brand-badge">${client.services ? client.services.length : 0} serviço(s)</span>
+                            </div>
+                        </div>
+
+                        <div class="client-services-grid">
+                `;
+
+                if (!client.services || client.services.length === 0) {
+                    html += `<div class="empty-logs" style="grid-column: 1 / -1;">Nenhum serviço registrado para este cliente ainda.</div>`;
+                } else {
+                    client.services.forEach(service => {
+                        const status = service.computed_status || 'unknown';
+                        const statusClass = status === 'ok' ? 'status--ok' : (status === 'overdue' ? 'status--overdue' : (status === 'failed' ? 'status--failed' : 'status--unknown'));
+                        const statusLabel = service.status_label || 'Aguardando';
+
+                        html += `
+                            <article class="service-card" data-service-name="${escapeHtml((service.name || '').toLowerCase())}" data-status="${status}">
+                                <div class="service-card-head">
+                                    <h3 class="service-name" title="${escapeHtml(service.name)}">${escapeHtml(service.name)}</h3>
+                                    <span class="status-chip ${statusClass}">${statusLabel}</span>
+                                </div>
+
+                                <div class="service-meta-grid">
+                                    <div class="meta-item">
+                                        <span class="meta-label">Periodicidade</span>
+                                        <span class="meta-value">${service.interval_minutes} min (tol: ${service.grace_minutes}m)</span>
+                                    </div>
+                                    <div class="meta-item">
+                                        <span class="meta-label">Último Ping</span>
+                                        <span class="meta-value">${escapeHtml(service.last_ping_at_formatted && service.last_ping_at_formatted !== 'Nunca' ? service.last_ping_at_formatted + ' (' + service.last_ping_at_human + ')' : 'Nunca')}</span>
+                                    </div>
+                                    <div class="meta-item">
+                                        <span class="meta-label">Previsão / Prazo</span>
+                                        ${service.is_overdue ? `<span class="meta-value meta-value--alert">${escapeHtml(service.next_expected_at_human)}</span>` : `<span class="meta-value meta-value--highlight">${escapeHtml(service.next_expected_at_human)}</span>`}
+                                    </div>
+                                </div>
+
+                                ${(service.last_message || status === 'overdue' || status === 'failed') ? `
+                                    <div class="service-alert-banner">
+                                        <span>⚠️</span>
+                                        <span>${escapeHtml(service.last_message || (status === 'overdue' ? 'Não enviou sinal de vida no intervalo combinado!' : 'Falha reportada pelo script.'))}</span>
+                                    </div>
+                                ` : ''}
+
+                                <div class="service-logs-area">
+                                    <div class="logs-heading">
+                                        <span>Últimos Logs Recebidos</span>
+                                        <span>${service.logs ? service.logs.length : 0} log(s)</span>
+                                    </div>
+                        `;
+
+                        if (!service.logs || service.logs.length === 0) {
+                            html += `<div class="empty-logs">Nenhum arquivo de log anexado recentemente.</div>`;
+                        } else {
+                            service.logs.forEach(log => {
+                                const b64 = log.log_excerpt ? btoa(unescape(encodeURIComponent(log.log_excerpt))) : '';
+                                html += `
+                                    <div class="log-row">
+                                        <span class="log-file" title="${escapeHtml(log.filename)}">${escapeHtml(log.filename || 'log.txt')}</span>
+                                        <span class="log-date">${escapeHtml(log.received_at_formatted)}</span>
+                                        <span class="meta-value" style="font-size: 10px;">${escapeHtml(log.file_size_formatted)}</span>
+                                        <div class="log-actions">
+                                            ${log.log_excerpt ? `<button class="btn-log-action" onclick="showLogModal('${escapeHtml(service.name)}', '${escapeHtml(log.filename)}', '${b64}', '${log.download_url}')">Preview</button>` : ''}
+                                            <a href="${log.download_url}" class="btn-log-action" target="_blank" download>Baixar</a>
+                                        </div>
+                                    </div>
+                                `;
+                            });
+                        }
+
+                        html += `
+                                </div>
+                            </article>
                         `;
                     });
-                    backupsHtml += `</div>`;
-                }
-
-                let messageBanner = '';
-                if (statusClass === 'failed' && sys.last_health_message) {
-                    messageBanner = `
-                        <div class="health-message-banner">
-                            <span>⚠️ ${escapeHtml(sys.last_health_message)}</span>
-                        </div>
-                    `;
                 }
 
                 html += `
-                    <article class="system-card" id="system-card-${escapeHtml(sys.slug)}" data-slug="${escapeHtml(sys.slug)}">
-                        <div class="system-card-head">
-                            <div class="system-identity">
-                                <h3 class="system-name">${escapeHtml(sys.name)}</h3>
-                                <span class="system-slug">/${escapeHtml(sys.slug)}</span>
-                            </div>
-                            <span class="status-chip status--${escapeHtml(statusClass)}">
-                                ${escapeHtml(statusLabel)}
-                            </span>
                         </div>
-
-                        ${messageBanner}
-
-                        <div class="system-meta-grid">
-                            <div class="meta-item">
-                                <span class="meta-label">IP Externo</span>
-                                <span class="meta-value meta-ip">${escapeHtml(sys.external_ip || 'Não informado')}</span>
-                            </div>
-                            <div class="meta-item">
-                                <span class="meta-label">Último healthcheck</span>
-                                <span class="meta-value">${escapeHtml(sys.last_health_at_human || 'Aguardando')}</span>
-                            </div>
-                            <div class="meta-item">
-                                <span class="meta-label">Último backup</span>
-                                <span class="meta-value">${escapeHtml(sys.last_backup_at_human || 'Nenhum recebido')}</span>
-                            </div>
-                        </div>
-
-                        <div class="backups-area">
-                            <div class="backups-heading">
-                                <h4>Backups recentes</h4>
-                                <span class="backups-count">${sys.backup_logs_count || 0} registro(s)</span>
-                            </div>
-                            ${backupsHtml}
-                        </div>
-                    </article>
+                    </section>
                 `;
             });
 
             container.innerHTML = html;
+            filterServices();
         }
 
-        // Helper to escape HTML strings
-        function escapeHtml(str) {
-            if (str === null || str === undefined) return '';
-            return String(str)
-                .replace(/&/g, '&amp;')
-                .replace(/</g, '&lt;')
-                .replace(/>/g, '&gt;')
-                .replace(/"/g, '&quot;')
-                .replace(/'/g, '&#039;');
-        }
-
-        // Fetch Dashboard Data from API
-        async function fetchDashboardData() {
-            if (isFetching) return;
-            isFetching = true;
+        async function fetchDashboardMetrics() {
+            const iconElem = document.getElementById('countdown-icon');
+            if (iconElem) iconElem.classList.add('spinning');
 
             try {
-                const response = await fetch('/api/dashboard/metrics', {
-                    headers: { 'Accept': 'application/json' }
-                });
+                const res = await fetch('/api/dashboard/metrics');
+                if (!res.ok) return;
+                const data = await res.json();
 
-                if (!response.ok) {
-                    throw new Error(`HTTP ${response.status}`);
-                }
-
-                const data = await response.json();
-
-                // Update Metrics Values
                 if (data.metrics) {
-                    const totalEl = document.getElementById('metric-total');
-                    const onlineEl = document.getElementById('metric-online');
-                    const attentionEl = document.getElementById('metric-attention');
-                    const backupsEl = document.getElementById('metric-backups');
-                    const attentionCard = document.querySelector('.metric-card--attention');
-
-                    if (totalEl) totalEl.textContent = data.metrics.total ?? 0;
-                    if (onlineEl) onlineEl.textContent = data.metrics.online ?? 0;
-                    if (attentionEl) attentionEl.textContent = data.metrics.attention ?? 0;
-                    if (backupsEl) backupsEl.textContent = data.metrics.backups ?? 0;
-
-                    if (attentionCard) {
-                        if ((data.metrics.attention ?? 0) > 0) {
-                            attentionCard.classList.add('has-attention');
-                        } else {
-                            attentionCard.classList.remove('has-attention');
-                        }
-                    }
+                    document.getElementById('metric-clients').textContent = data.metrics.clients_count;
+                    document.getElementById('metric-total').textContent = data.metrics.total;
+                    document.getElementById('metric-online').textContent = data.metrics.online;
+                    document.getElementById('metric-attention').textContent = data.metrics.attention;
+                    document.getElementById('metric-logs-today').textContent = data.metrics.logs_today;
                 }
 
-                // Update Systems Grid
-                if (data.systems) {
-                    renderSystems(data.systems);
+                if (data.clients) {
+                    renderClientsList(data.clients);
                 }
-
-                // Update Last Sync
-                const lastSyncEl = document.getElementById('last-sync-time');
-                if (lastSyncEl) {
-                    const now = new Date();
-                    lastSyncEl.textContent = `Última checagem: ${now.toLocaleTimeString('pt-BR', { hour12: false })}`;
-                }
-
-                setConnectionStatus('online', 'Monitoramento ativo');
-            } catch (err) {
-                console.error('Falha ao sincronizar dashboard:', err);
-                setConnectionStatus('error', 'Conexão perdida (reconectando...)');
+            } catch (e) {
+                console.error('Polling error:', e);
             } finally {
-                isFetching = false;
-                countdown = POLL_INTERVAL_SECONDS;
+                setTimeout(() => {
+                    if (iconElem) iconElem.classList.remove('spinning');
+                }, 600);
             }
         }
 
-        // Countdown Timer & Auto-Polling Loop
-        setInterval(() => {
-            countdown--;
-            const timerLabel = document.getElementById('sync-timer-label');
-            if (timerLabel) {
-                timerLabel.textContent = `Auto-refresh ${countdown}s`;
+        function runCountdown() {
+            currentCountdown--;
+            const secondsElem = document.getElementById('countdown-seconds');
+            if (secondsElem) {
+                secondsElem.textContent = `${Math.max(0, currentCountdown)}s`;
             }
 
-            if (countdown <= 0) {
-                fetchDashboardData();
+            if (currentCountdown <= 0) {
+                currentCountdown = refreshInterval;
+                fetchDashboardMetrics();
             }
-        }, 1000);
+        }
+
+        setInterval(runCountdown, 1000);
     </script>
 </body>
 </html>

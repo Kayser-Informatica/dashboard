@@ -39,4 +39,8 @@ return [
         'token' => env('MONITORING_API_TOKEN'),
     ],
 
+    'dashboard' => [
+        'refresh_interval' => (int) env('DASHBOARD_REFRESH_INTERVAL_SECONDS', 30),
+    ],
+
 ];

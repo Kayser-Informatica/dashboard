@@ -15,6 +15,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->alias([
             'monitoring.token' => \App\Http\Middleware\VerifyMonitoringToken::class,
+            'client.token' => \App\Http\Middleware\VerifyClientToken::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

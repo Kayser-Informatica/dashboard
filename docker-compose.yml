@@ -1,0 +1,55 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    container_name: systems_dashboard_app
+    ports:
+      - "8000:80"
+    environment:
+      APP_NAME: "Systems Control"
+      APP_ENV: local
+      APP_KEY: "base64:7kK9XwFhKqWwY5b8U1a3c7e9G2i4k6m8O0q2s4u6w8A="
+      APP_DEBUG: "true"
+      APP_URL: "http://localhost:8000"
+      APP_TIMEZONE: "America/Sao_Paulo"
+      DASHBOARD_REFRESH_INTERVAL_SECONDS: "${DASHBOARD_REFRESH_INTERVAL_SECONDS:-30}"
+      DB_CONNECTION: mysql
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_DATABASE: dashboard
+      DB_USERNAME: dashboard_user
+      DB_PASSWORD: secret
+      SESSION_DRIVER: file
+      CACHE_STORE: file
+      QUEUE_CONNECTION: sync
+      FILESYSTEM_DISK: local
+    volumes:
+      - ./storage:/var/www/html/storage
+    depends_on:
+      mysql:
+        condition: service_healthy
+    restart: unless-stopped
+
+  mysql:
+    image: mysql:8.0
+    container_name: systems_dashboard_mysql
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_DATABASE: dashboard
+      MYSQL_USER: dashboard_user
+      MYSQL_PASSWORD: secret
+      MYSQL_ROOT_PASSWORD: root_secret
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot_secret"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+volumes:
+  mysql_data:
+    driver: local
