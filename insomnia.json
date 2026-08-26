@@ -1,0 +1,430 @@
+{
+  "_type": "export",
+  "__export_format": 4,
+  "__export_date": "2026-08-20T17:20:00.000Z",
+  "__export_source": "insomnia.desktop.app:v2023.5.8",
+  "resources": [
+    {
+      "_id": "wrk_systems_control",
+      "parentId": null,
+      "modified": 1755709500000,
+      "created": 1755709500000,
+      "name": "Systems Control API",
+      "description": "Coleção completa da API de monitoramento de sistemas, healthchecks e logs de backups.",
+      "scope": "collection",
+      "_type": "workspace"
+    },
+    {
+      "_id": "env_systems_control_base",
+      "parentId": "wrk_systems_control",
+      "modified": 1755709500000,
+      "created": 1755709500000,
+      "name": "Base Environment",
+      "data": {
+        "base_url": "http://127.0.0.1:8000",
+        "token": "change-this-token-in-production",
+        "system_slug": "erp-principal"
+      },
+      "dataPropertyOrder": {
+        "&": [
+          "base_url",
+          "token",
+          "system_slug"
+        ]
+      },
+      "color": null,
+      "isPrivate": false,
+      "metaSortKey": 1755709500000,
+      "_type": "environment"
+    },
+    {
+      "_id": "env_local",
+      "parentId": "env_systems_control_base",
+      "modified": 1755709500000,
+      "created": 1755709500000,
+      "name": "Local (Dev)",
+      "data": {
+        "base_url": "http://127.0.0.1:8000",
+        "token": "change-this-token-in-production",
+        "system_slug": "erp-principal"
+      },
+      "dataPropertyOrder": {
+        "&": [
+          "base_url",
+          "token",
+          "system_slug"
+        ]
+      },
+      "color": "#0c7d6d",
+      "isPrivate": false,
+      "metaSortKey": 1755709501000,
+      "_type": "environment"
+    },
+    {
+      "_id": "env_staging",
+      "parentId": "env_systems_control_base",
+      "modified": 1755709500000,
+      "created": 1755709500000,
+      "name": "Staging",
+      "data": {
+        "base_url": "https://staging-monitoramento.suaempresa.com.br",
+        "token": "troque-pelo-token-de-staging",
+        "system_slug": "erp-principal"
+      },
+      "dataPropertyOrder": {
+        "&": [
+          "base_url",
+          "token",
+          "system_slug"
+        ]
+      },
+      "color": "#ad6a08",
+      "isPrivate": false,
+      "metaSortKey": 1755709502000,
+      "_type": "environment"
+    },
+    {
+      "_id": "env_production",
+      "parentId": "env_systems_control_base",
+      "modified": 1755709500000,
+      "created": 1755709500000,
+      "name": "Produção",
+      "data": {
+        "base_url": "https://monitoramento.suaempresa.com.br",
+        "token": "troque-pelo-token-de-producao",
+        "system_slug": "erp-principal"
+      },
+      "dataPropertyOrder": {
+        "&": [
+          "base_url",
+          "token",
+          "system_slug"
+        ]
+      },
+      "color": "#bf493b",
+      "isPrivate": false,
+      "metaSortKey": 1755709503000,
+      "_type": "environment"
+    },
+    {
+      "_id": "fld_healthchecks",
+      "parentId": "wrk_systems_control",
+      "modified": 1755709500000,
+      "created": 1755709500000,
+      "name": "Healthchecks",
+      "description": "Endpoints para envio de status operacional e IP dos sistemas monitorados.",
+      "environment": {},
+      "environmentPropertyOrder": null,
+      "metaSortKey": -100,
+      "_type": "request_group"
+    },
+    {
+      "_id": "fld_backups",
+      "parentId": "wrk_systems_control",
+      "modified": 1755709500000,
+      "created": 1755709500000,
+      "name": "Backups",
+      "description": "Endpoints para ingestão de arquivos de log de backups.",
+      "environment": {},
+      "environmentPropertyOrder": null,
+      "metaSortKey": -90,
+      "_type": "request_group"
+    },
+    {
+      "_id": "fld_systems",
+      "parentId": "wrk_systems_control",
+      "modified": 1755709500000,
+      "created": 1755709500000,
+      "name": "Sistemas",
+      "description": "Endpoints para consulta pública/interna de sistemas cadastrados.",
+      "environment": {},
+      "environmentPropertyOrder": null,
+      "metaSortKey": -80,
+      "_type": "request_group"
+    },
+    {
+      "_id": "req_healthcheck_ok_bearer",
+      "parentId": "fld_healthchecks",
+      "modified": 1755709500000,
+      "created": 1755709500000,
+      "url": "{{ _.base_url }}/api/healthchecks",
+      "name": "Healthcheck OK (com IP e Bearer Token)",
+      "description": "Envia um healthcheck de sucesso com o IP externo do sistema.",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"name\": \"ERP Principal\",\n  \"slug\": \"{{ _.system_slug }}\",\n  \"ok\": true,\n  \"ip\": \"45.225.238.218\",\n  \"message\": \"Serviço operacional (latência 22ms)\"\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "name": "Accept",
+          "value": "application/json"
+        },
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token }}"
+        },
+        {
+          "name": "X-Forwarded-For",
+          "value": "45.225.238.218",
+          "description": "Header para validação de IP em chamadas via proxy/local"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -100,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_healthcheck_failed",
+      "parentId": "fld_healthchecks",
+      "modified": 1755709500000,
+      "created": 1755709500000,
+      "url": "{{ _.base_url }}/api/healthchecks",
+      "name": "Healthcheck Falha / Erro",
+      "description": "Registra uma falha de operação no sistema.",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"name\": \"ERP Principal\",\n  \"slug\": \"{{ _.system_slug }}\",\n  \"ok\": false,\n  \"message\": \"Gateway de pagamento com timeout de conexão\"\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "name": "Accept",
+          "value": "application/json"
+        },
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token }}"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -90,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_healthcheck_x_token",
+      "parentId": "fld_healthchecks",
+      "modified": 1755709500000,
+      "created": 1755709500000,
+      "url": "{{ _.base_url }}/api/healthchecks",
+      "name": "Healthcheck via Header X-Monitoring-Token",
+      "description": "Exemplo utilizando o header customizado X-Monitoring-Token.",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"name\": \"Sistema Financeiro\",\n  \"slug\": \"sistema-financeiro\",\n  \"status\": \"ok\",\n  \"message\": \"Fila de conciliação processada sem erros\"\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "name": "Accept",
+          "value": "application/json"
+        },
+        {
+          "name": "X-Monitoring-Token",
+          "value": "{{ _.token }}"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -80,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_backup_log_store",
+      "parentId": "fld_backups",
+      "modified": 1755709500000,
+      "created": 1755709500000,
+      "url": "{{ _.base_url }}/api/backups/logs",
+      "name": "Enviar Log de Backup (Sucesso)",
+      "description": "Realiza upload de arquivo de log de backup vinculado a um sistema.",
+      "method": "POST",
+      "body": {
+        "mimeType": "multipart/form-data",
+        "params": [
+          {
+            "name": "system",
+            "value": "{{ _.system_slug }}",
+            "description": "Slug ou nome do sistema cadastrado",
+            "disabled": false
+          },
+          {
+            "name": "status",
+            "value": "success",
+            "description": "Status: success, failed, warning ou received",
+            "disabled": false
+          },
+          {
+            "name": "log_file",
+            "type": "file",
+            "description": "Arquivo de log (.log, .txt)",
+            "disabled": false
+          }
+        ]
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Accept",
+          "value": "application/json"
+        },
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token }}"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -100,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_backup_log_failed",
+      "parentId": "fld_backups",
+      "modified": 1755709500000,
+      "created": 1755709500000,
+      "url": "{{ _.base_url }}/api/backups/logs",
+      "name": "Enviar Log de Backup (Falha)",
+      "description": "Envia um log de backup que falhou durante a execução.",
+      "method": "POST",
+      "body": {
+        "mimeType": "multipart/form-data",
+        "params": [
+          {
+            "name": "system",
+            "value": "{{ _.system_slug }}",
+            "disabled": false
+          },
+          {
+            "name": "status",
+            "value": "failed",
+            "disabled": false
+          },
+          {
+            "name": "log_file",
+            "type": "file",
+            "disabled": false
+          }
+        ]
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Accept",
+          "value": "application/json"
+        },
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token }}"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -90,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_systems_list",
+      "parentId": "fld_systems",
+      "modified": 1755709500000,
+      "created": 1755709500000,
+      "url": "{{ _.base_url }}/api/systems",
+      "name": "Listar Sistemas e Últimos Backups",
+      "description": "Retorna todos os sistemas cadastrados com status, IP e seus 5 últimos logs de backup.",
+      "method": "GET",
+      "body": {},
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Accept",
+          "value": "application/json"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -100,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_dashboard_metrics",
+      "parentId": "fld_systems",
+      "modified": 1755709500000,
+      "created": 1755709500000,
+      "url": "{{ _.base_url }}/api/dashboard/metrics",
+      "name": "Consultar Métricas e Dados do Dashboard",
+      "description": "Retorna os indicadores operacionais agregados, sistemas e últimos backups para o painel de monitoramento reativo.",
+      "method": "GET",
+      "body": {},
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Accept",
+          "value": "application/json"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -90,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    }
+  ]
+}
+
