@@ -472,30 +472,55 @@
         }
 
         /* Highlighting for failed / alert cards */
-        .service-card[data-status="failed"] {
-            border-color: rgba(244, 63, 94, 0.55);
-            background: linear-gradient(180deg, rgba(244, 63, 94, 0.08) 0%, var(--bg-surface-elevated) 35%);
-            box-shadow: 0 0 20px -3px rgba(244, 63, 94, 0.22), 0 4px 16px rgba(0, 0, 0, 0.35);
+        .service-card[data-status="failed"],
+        .service-card.service-card--failed {
+            border: 1.5px solid rgba(244, 63, 94, 0.7);
+            border-left: 5px solid #f43f5e;
+            background: linear-gradient(180deg, rgba(244, 63, 94, 0.16) 0%, rgba(20, 10, 15, 0.95) 100%) !important;
+            box-shadow: 0 0 24px -2px rgba(244, 63, 94, 0.28), 0 8px 24px rgba(0, 0, 0, 0.5);
             animation: card-alert-pulse 3s infinite ease-in-out;
         }
 
-        .service-card[data-status="failed"] .service-card-head {
-            background: rgba(244, 63, 94, 0.15);
-            border-bottom: 1px solid rgba(244, 63, 94, 0.3);
+        .service-card[data-status="failed"] .service-card-head,
+        .service-card.service-card--failed .service-card-head {
+            background: rgba(244, 63, 94, 0.22) !important;
+            border-bottom: 1px solid rgba(244, 63, 94, 0.4);
         }
 
-        .service-card[data-status="failed"] .service-name {
-            color: #fecdd3;
+        .service-card[data-status="failed"] .service-name,
+        .service-card.service-card--failed .service-name {
+            color: #ffe4e6;
+            text-shadow: 0 0 10px rgba(244, 63, 94, 0.4);
+        }
+
+        .service-card[data-status="failed"] .service-meta-grid,
+        .service-card.service-card--failed .service-meta-grid {
+            background: rgba(0, 0, 0, 0.3);
+            border-bottom: 1px solid rgba(244, 63, 94, 0.25);
+        }
+
+        .service-card[data-status="failed"] .service-alert-banner,
+        .service-card.service-card--failed .service-alert-banner {
+            background: rgba(244, 63, 94, 0.28);
+            border-bottom: 1px solid rgba(244, 63, 94, 0.4);
+            color: #fff1f2;
+            font-weight: 600;
+        }
+
+        .service-card[data-status="failed"] .log-row,
+        .service-card.service-card--failed .log-row {
+            background: rgba(0, 0, 0, 0.2);
+            border-color: rgba(244, 63, 94, 0.2);
         }
 
         @keyframes card-alert-pulse {
             0%, 100% {
-                border-color: rgba(244, 63, 94, 0.45);
-                box-shadow: 0 0 16px -2px rgba(244, 63, 94, 0.18), 0 4px 16px rgba(0, 0, 0, 0.35);
+                border-color: rgba(244, 63, 94, 0.6);
+                box-shadow: 0 0 20px -2px rgba(244, 63, 94, 0.25), 0 6px 20px rgba(0, 0, 0, 0.4);
             }
             50% {
-                border-color: rgba(244, 63, 94, 0.85);
-                box-shadow: 0 0 26px 2px rgba(244, 63, 94, 0.38), 0 4px 20px rgba(0, 0, 0, 0.45);
+                border-color: rgba(244, 63, 94, 1);
+                box-shadow: 0 0 32px 3px rgba(244, 63, 94, 0.45), 0 8px 24px rgba(0, 0, 0, 0.55);
             }
         }
 
@@ -954,7 +979,7 @@
                                 };
                             @endphp
 
-                            <article class="service-card" data-service-name="{{ strtolower($service->name) }}" data-status="{{ $status }}">
+                            <article class="service-card {{ $status === 'failed' ? 'service-card--failed' : '' }}" data-service-name="{{ strtolower($service->name) }}" data-status="{{ $status }}">
                                 <div class="service-card-head">
                                     <h3 class="service-name" title="{{ $service->name }}">{{ $service->name }}</h3>
                                     <span class="status-chip {{ $statusClass }}">{{ $statusLabel }}</span>
@@ -1170,7 +1195,7 @@
                         const defaultAlertMsg = service.is_overdue ? 'Tempo de tolerância ultrapassado! Sem sinal de vida no intervalo previsto.' : 'Falha reportada pelo script.';
 
                         html += `
-                            <article class="service-card" data-service-name="${escapeHtml((service.name || '').toLowerCase())}" data-status="${status}">
+                            <article class="service-card ${status === 'failed' ? 'service-card--failed' : ''}" data-service-name="${escapeHtml((service.name || '').toLowerCase())}" data-status="${status}">
                                 <div class="service-card-head">
                                     <h3 class="service-name" title="${escapeHtml(service.name)}">${escapeHtml(service.name)}</h3>
                                     <span class="status-chip ${statusClass}">${statusLabel}</span>
