@@ -13,10 +13,9 @@ class DashboardController extends Controller
     {
         $statusPriority = fn (string $status) => match ($status) {
             'failed' => 1,
-            'overdue' => 2,
-            'unknown' => 3,
-            'ok' => 4,
-            default => 5,
+            'unknown' => 2,
+            'ok' => 3,
+            default => 4,
         };
 
         $services = MonitoredService::query()
@@ -35,7 +34,7 @@ class DashboardController extends Controller
             'clients_count' => Client::count(),
             'total' => $services->count(),
             'online' => $services->filter(fn ($s) => $s->computed_status === 'ok')->count(),
-            'attention' => $services->filter(fn ($s) => in_array($s->computed_status, ['failed', 'overdue', 'unknown']))->count(),
+            'attention' => $services->filter(fn ($s) => in_array($s->computed_status, ['failed', 'unknown']))->count(),
             'logs_today' => ServiceLog::query()->whereDate('received_at', today())->count(),
         ];
 
@@ -45,7 +44,6 @@ class DashboardController extends Controller
 
             $statusLabel = match ($computedStatus) {
                 'ok' => 'Operacional',
-                'overdue' => 'Atrasado',
                 'failed' => 'Falha',
                 default => 'Aguardando',
             };

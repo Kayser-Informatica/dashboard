@@ -1054,13 +1054,11 @@
                         $statusClass = match($status) {
                             'ok' => 'status--ok',
                             'failed' => 'status--failed',
-                            'overdue' => 'status--overdue',
                             default => 'status--unknown',
                         };
                         $statusLabel = match($status) {
                             'ok' => 'Operacional',
                             'failed' => 'Falha',
-                            'overdue' => 'Atrasado',
                             default => 'Aguardando',
                         };
                     @endphp
@@ -1252,7 +1250,7 @@
                 let matchesFilter = true;
 
                 if (currentFilter === 'alerts') {
-                    matchesFilter = (status === 'failed' || status === 'overdue');
+                    matchesFilter = (status === 'failed');
                 } else if (currentFilter === 'ok') {
                     matchesFilter = (status === 'ok');
                 }
@@ -1270,9 +1268,9 @@
 
             const statusChip = document.getElementById('modal-service-status-chip');
             const status = service.computed_status || 'unknown';
-            const statusClass = status === 'ok' ? 'status--ok' : (status === 'failed' ? 'status--failed' : (status === 'overdue' ? 'status--overdue' : 'status--unknown'));
+            const statusClass = status === 'ok' ? 'status--ok' : (status === 'failed' ? 'status--failed' : 'status--unknown');
             statusChip.className = `status-chip ${statusClass}`;
-            statusChip.textContent = service.status_label || (status === 'ok' ? 'Operacional' : (status === 'failed' ? 'Falha' : (status === 'overdue' ? 'Atrasado' : 'Aguardando')));
+            statusChip.textContent = service.status_label || (status === 'ok' ? 'Operacional' : (status === 'failed' ? 'Falha' : 'Aguardando'));
 
             document.getElementById('sm-interval').textContent = `${service.interval_minutes} min (tol: ${service.grace_minutes}m)`;
             document.getElementById('sm-last-ping').textContent = `${service.last_ping_at_human} (${service.last_ping_at_formatted})`;
@@ -1283,7 +1281,7 @@
 
             const alertBox = document.getElementById('sm-alert-box');
             const alertText = document.getElementById('sm-alert-text');
-            if (service.last_message || status === 'failed' || status === 'overdue') {
+            if (service.last_message || status === 'failed' || service.is_overdue) {
                 alertBox.style.display = 'block';
                 alertText.textContent = service.last_message || (service.is_overdue ? 'Tempo de tolerância ultrapassado! Sem sinal de vida no intervalo previsto.' : 'Falha reportada na execução do serviço.');
             } else {
@@ -1381,9 +1379,9 @@
             let html = '';
             services.forEach(service => {
                 const status = service.computed_status || 'unknown';
-                const statusClass = status === 'ok' ? 'status--ok' : (status === 'failed' ? 'status--failed' : (status === 'overdue' ? 'status--overdue' : 'status--unknown'));
-                const statusLabel = service.status_label || (status === 'ok' ? 'Operacional' : (status === 'failed' ? 'Falha' : (status === 'overdue' ? 'Atrasado' : 'Aguardando')));
-                const isAlert = service.last_message || status === 'failed' || status === 'overdue';
+                const statusClass = status === 'ok' ? 'status--ok' : (status === 'failed' ? 'status--failed' : 'status--unknown');
+                const statusLabel = service.status_label || (status === 'ok' ? 'Operacional' : (status === 'failed' ? 'Falha' : 'Aguardando'));
+                const isAlert = service.last_message || status === 'failed' || service.is_overdue;
                 const defaultAlertMsg = service.is_overdue ? 'Tempo de tolerância ultrapassado!' : 'Falha reportada pelo script.';
 
                 html += `
