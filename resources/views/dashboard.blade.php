@@ -390,70 +390,17 @@
             border-color: rgba(56, 189, 248, 0.4);
         }
 
-        /* Clients & Services Container */
-        .clients-container {
+        /* Services Container & Grid */
+        .services-container {
             display: flex;
             flex-direction: column;
-            gap: 20px;
+            gap: 16px;
         }
 
-        .client-section {
-            background: var(--bg-surface);
-            border: 1px solid var(--line);
-            border-radius: var(--radius-lg);
-            overflow: hidden;
-            box-shadow: var(--shadow-card);
-        }
-
-        .client-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 16px 22px;
-            background: var(--bg-card-head);
-            border-bottom: 1px solid var(--line);
-        }
-
-        .client-title-row {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .client-avatar {
-            width: 34px;
-            height: 34px;
-            border-radius: 8px;
-            background: linear-gradient(135deg, #3b82f6, #06b6d4);
-            display: grid;
-            place-items: center;
-            font-weight: 700;
-            font-size: 14px;
-            color: #fff;
-        }
-
-        .client-name {
-            font-size: 18px;
-            font-weight: 700;
-            color: #ffffff;
-            margin: 0;
-        }
-
-        .client-slug {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 11px;
-            color: var(--ink-subtle);
-            background: var(--bg-base);
-            padding: 2px 8px;
-            border-radius: 4px;
-            border: 1px solid var(--line);
-        }
-
-        .client-services-grid {
+        .services-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
             gap: 14px;
-            padding: 18px 20px 22px;
         }
 
         /* Service Card - Compacto & Resumido */
@@ -514,7 +461,7 @@
         .service-card-head {
             display: flex;
             justify-content: space-between;
-            align-items: center;
+            align-items: flex-start;
             padding: 12px 14px;
             background: var(--bg-meta);
             border-bottom: 1px solid var(--line);
@@ -523,10 +470,30 @@
 
         .service-title-wrap {
             display: flex;
-            align-items: center;
-            gap: 8px;
+            flex-direction: column;
+            gap: 4px;
             min-width: 0;
             flex: 1;
+        }
+
+        .service-client-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            color: #38bdf8;
+            background: rgba(14, 165, 233, 0.12);
+            border: 1px solid rgba(56, 189, 248, 0.25);
+            padding: 2px 7px;
+            border-radius: 4px;
+            width: fit-content;
+            max-width: 100%;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .service-name {
@@ -1109,144 +1076,129 @@
             </div>
         </div>
 
-        <!-- Clients & Services Area -->
-        <main class="clients-container" id="clients-container">
-            @forelse($clients as $client)
-                <section class="client-section" data-client-id="{{ $client->id }}" data-client-name="{{ strtolower($client->name) }}">
-                    <div class="client-header">
-                        <div class="client-title-row">
-                            <div class="client-avatar">{{ strtoupper(substr($client->name, 0, 2)) }}</div>
-                            <div>
-                                <h2 class="client-name">{{ $client->name }}</h2>
-                                <span class="client-slug">{{ $client->slug }}</span>
+        <!-- Services Area (Flat Grid) -->
+        <main class="services-container" id="services-container">
+            <div class="services-grid" id="services-grid">
+                @forelse($services as $service)
+                    @php
+                        $status = $service->computed_status;
+                        $statusClass = match($status) {
+                            'ok' => 'status--ok',
+                            'failed' => 'status--failed',
+                            'overdue' => 'status--overdue',
+                            default => 'status--unknown',
+                        };
+                        $statusLabel = match($status) {
+                            'ok' => 'Operacional',
+                            'failed' => 'Falha',
+                            'overdue' => 'Atrasado',
+                            default => 'Aguardando',
+                        };
+                    @endphp
+
+                    <article class="service-card {{ $status === 'failed' ? 'service-card--failed' : '' }}" data-service-id="{{ $service->id }}" data-service-name="{{ strtolower($service->name) }}" data-client-name="{{ strtolower($service->client?->name ?? '') }}" data-status="{{ $status }}">
+                        <div class="service-card-head">
+                            <div class="service-title-wrap">
+                                <span class="service-client-badge" title="Cliente: {{ $service->client?->name }}">
+                                    <span>🏢</span>
+                                    <span>{{ $service->client?->name ?? 'Cliente' }}</span>
+                                </span>
+                                <h3 class="service-name" title="{{ $service->name }}">{{ $service->name }}</h3>
+                            </div>
+                            <span class="status-chip {{ $statusClass }}">{{ $statusLabel }}</span>
+                        </div>
+
+                        <div class="service-quick-meta">
+                            <div class="quick-meta-item">
+                                <span class="quick-meta-label">Último Ping</span>
+                                <span class="quick-meta-val">{{ $service->last_ping_at ? $service->last_ping_at->diffForHumans() : 'Nunca' }}</span>
+                            </div>
+                            <div class="quick-meta-item">
+                                <span class="quick-meta-label">Previsão / Prazo</span>
+                                @if($service->is_overdue)
+                                    <span class="quick-meta-val alert">Atrasado há {{ $service->next_expected_at?->diffForHumans(null, true) }}</span>
+                                @elseif($service->next_expected_at)
+                                    <span class="quick-meta-val highlight">{{ $service->next_expected_at->diffForHumans() }}</span>
+                                @else
+                                    <span class="quick-meta-val">-</span>
+                                @endif
                             </div>
                         </div>
-                        <div class="client-badge-group">
-                            <span class="brand-badge">{{ $client->monitoredServices->count() }} serviço(s)</span>
-                        </div>
-                    </div>
 
-                    <div class="client-services-grid">
-                        @forelse($client->monitoredServices as $service)
-                            @php
-                                $status = $service->computed_status;
-                                $statusClass = match($status) {
-                                    'ok' => 'status--ok',
-                                    'failed' => 'status--failed',
-                                    'overdue' => 'status--overdue',
-                                    default => 'status--unknown',
-                                };
-                                $statusLabel = match($status) {
-                                    'ok' => 'Operacional',
-                                    'failed' => 'Falha',
-                                    'overdue' => 'Atrasado',
-                                    default => 'Aguardando',
-                                };
-                            @endphp
+                        @if($service->last_message || $status === 'failed' || $status === 'overdue')
+                            <div class="service-mini-alert" title="{{ $service->last_message ?: ($service->is_overdue ? 'Tempo de tolerância ultrapassado! Sem sinal de vida no intervalo previsto.' : 'Falha reportada pelo script.') }}">
+                                <span>⚠️</span>
+                                <span class="mini-alert-text">{{ $service->last_message ?: ($service->is_overdue ? 'Tempo de tolerância ultrapassado!' : 'Falha reportada pelo script.') }}</span>
+                            </div>
+                        @endif
 
-                            <article class="service-card {{ $status === 'failed' ? 'service-card--failed' : '' }}" data-service-id="{{ $service->id }}" data-service-name="{{ strtolower($service->name) }}" data-status="{{ $status }}">
-                                <div class="service-card-head">
-                                    <div class="service-title-wrap">
-                                        <h3 class="service-name" title="{{ $service->name }}">{{ $service->name }}</h3>
-                                    </div>
-                                    <span class="status-chip {{ $statusClass }}">{{ $statusLabel }}</span>
-                                </div>
-
-                                <div class="service-quick-meta">
-                                    <div class="quick-meta-item">
-                                        <span class="quick-meta-label">Último Ping</span>
-                                        <span class="quick-meta-val">{{ $service->last_ping_at ? $service->last_ping_at->diffForHumans() : 'Nunca' }}</span>
-                                    </div>
-                                    <div class="quick-meta-item">
-                                        <span class="quick-meta-label">Previsão / Prazo</span>
-                                        @if($service->is_overdue)
-                                            <span class="quick-meta-val alert">Atrasado há {{ $service->next_expected_at?->diffForHumans(null, true) }}</span>
-                                        @elseif($service->next_expected_at)
-                                            <span class="quick-meta-val highlight">{{ $service->next_expected_at->diffForHumans() }}</span>
-                                        @else
-                                            <span class="quick-meta-val">-</span>
-                                        @endif
-                                    </div>
-                                </div>
-
-                                @if($service->last_message || $status === 'failed' || $status === 'overdue')
-                                    <div class="service-mini-alert" title="{{ $service->last_message ?: ($service->is_overdue ? 'Tempo de tolerância ultrapassado! Sem sinal de vida no intervalo previsto.' : 'Falha reportada pelo script.') }}">
-                                        <span>⚠️</span>
-                                        <span class="mini-alert-text">{{ $service->last_message ?: ($service->is_overdue ? 'Tempo de tolerância ultrapassado!' : 'Falha reportada pelo script.') }}</span>
-                                    </div>
+                        <div class="service-card-foot">
+                            <div class="service-summary-tag">
+                                <span>🔄 {{ $service->expected_interval_minutes }}m</span>
+                                @if($service->serviceLogs->count() > 0)
+                                    <span>• 📄 {{ $service->serviceLogs->count() }} log(s)</span>
                                 @endif
+                            </div>
+                            <button type="button" class="btn-toggle-details" onclick="toggleServiceDetails(this, '{{ $service->id }}')">
+                                <span class="toggle-text">Detalhes</span>
+                                <span class="toggle-arrow">▾</span>
+                            </button>
+                        </div>
 
-                                <div class="service-card-foot">
-                                    <div class="service-summary-tag">
-                                        <span>🔄 {{ $service->expected_interval_minutes }}m</span>
-                                        @if($service->serviceLogs->count() > 0)
-                                            <span>• 📄 {{ $service->serviceLogs->count() }} log(s)</span>
-                                        @endif
-                                    </div>
-                                    <button type="button" class="btn-toggle-details" onclick="toggleServiceDetails(this, '{{ $service->id }}')">
-                                        <span class="toggle-text">Detalhes</span>
-                                        <span class="toggle-arrow">▾</span>
-                                    </button>
+                        <div class="service-card-details">
+                            <div class="service-meta-grid">
+                                <div class="meta-item">
+                                    <span class="meta-label">Periodicidade</span>
+                                    <span class="meta-value">{{ $service->expected_interval_minutes }} min (tol: {{ $service->grace_period_minutes }}m)</span>
+                                </div>
+                                <div class="meta-item">
+                                    <span class="meta-label">Data Último Ping</span>
+                                    <span class="meta-value">{{ $service->last_ping_at ? $service->last_ping_at->format('d/m/Y H:i:s') : 'Nunca' }}</span>
+                                </div>
+                                <div class="meta-item">
+                                    <span class="meta-label">IP / Origem</span>
+                                    <span class="meta-value">{{ $service->last_ip ?? 'Não detectado' }}</span>
+                                </div>
+                            </div>
+
+                            @if($service->last_message)
+                                <div class="service-alert-banner">
+                                    <span>💬</span>
+                                    <span>{{ $service->last_message }}</span>
+                                </div>
+                            @endif
+
+                            <div class="service-logs-area">
+                                <div class="logs-heading">
+                                    <span>Últimos Logs Recebidos</span>
+                                    <span>{{ $service->serviceLogs->count() }} log(s)</span>
                                 </div>
 
-                                <div class="service-card-details">
-                                    <div class="service-meta-grid">
-                                        <div class="meta-item">
-                                            <span class="meta-label">Periodicidade</span>
-                                            <span class="meta-value">{{ $service->expected_interval_minutes }} min (tol: {{ $service->grace_period_minutes }}m)</span>
-                                        </div>
-                                        <div class="meta-item">
-                                            <span class="meta-label">Data Último Ping</span>
-                                            <span class="meta-value">{{ $service->last_ping_at ? $service->last_ping_at->format('d/m/Y H:i:s') : 'Nunca' }}</span>
-                                        </div>
-                                        <div class="meta-item">
-                                            <span class="meta-label">IP / Origem</span>
-                                            <span class="meta-value">{{ $service->last_ip ?? 'Não detectado' }}</span>
+                                @forelse($service->serviceLogs as $log)
+                                    <div class="log-row">
+                                        <span class="log-file" title="{{ $log->original_filename }}">{{ $log->original_filename ?: 'log.txt' }}</span>
+                                        <span class="log-date">{{ $log->received_at->format('d/m H:i') }}</span>
+                                        <span class="meta-value" style="font-size: 10px;">{{ number_format($log->file_size / 1024, 1) }} KB</span>
+                                        <div class="log-actions">
+                                            @if($log->log_excerpt)
+                                                <button class="btn-log-action" onclick="showLogModal('{{ addslashes($service->name) }}', '{{ addslashes($log->original_filename) }}', '{{ base64_encode($log->log_excerpt) }}', '{{ route('api.services.logs.download', ['service' => $service->id, 'log' => $log->id]) }}')">Preview</button>
+                                            @endif
+                                            <a href="{{ route('api.services.logs.download', ['service' => $service->id, 'log' => $log->id]) }}" class="btn-log-action" target="_blank" download>Baixar</a>
                                         </div>
                                     </div>
-
-                                    @if($service->last_message)
-                                        <div class="service-alert-banner">
-                                            <span>💬</span>
-                                            <span>{{ $service->last_message }}</span>
-                                        </div>
-                                    @endif
-
-                                    <div class="service-logs-area">
-                                        <div class="logs-heading">
-                                            <span>Últimos Logs Recebidos</span>
-                                            <span>{{ $service->serviceLogs->count() }} log(s)</span>
-                                        </div>
-
-                                        @forelse($service->serviceLogs as $log)
-                                            <div class="log-row">
-                                                <span class="log-file" title="{{ $log->original_filename }}">{{ $log->original_filename ?: 'log.txt' }}</span>
-                                                <span class="log-date">{{ $log->received_at->format('d/m H:i') }}</span>
-                                                <span class="meta-value" style="font-size: 10px;">{{ number_format($log->file_size / 1024, 1) }} KB</span>
-                                                <div class="log-actions">
-                                                    @if($log->log_excerpt)
-                                                        <button class="btn-log-action" onclick="showLogModal('{{ addslashes($service->name) }}', '{{ addslashes($log->original_filename) }}', '{{ base64_encode($log->log_excerpt) }}', '{{ route('api.services.logs.download', ['service' => $service->id, 'log' => $log->id]) }}')">Preview</button>
-                                                    @endif
-                                                    <a href="{{ route('api.services.logs.download', ['service' => $service->id, 'log' => $log->id]) }}" class="btn-log-action" target="_blank" download>Baixar</a>
-                                                </div>
-                                            </div>
-                                        @empty
-                                            <div class="empty-logs">Nenhum arquivo de log anexado recentemente.</div>
-                                        @endforelse
-                                    </div>
-                                </div>
-                            </article>
-                        @empty
-                            <div class="empty-logs" style="grid-column: 1 / -1;">Nenhum serviço registrado para este cliente ainda.</div>
-                        @endforelse
+                                @empty
+                                    <div class="empty-logs">Nenhum arquivo de log anexado recentemente.</div>
+                                @endforelse
+                            </div>
+                        </div>
+                    </article>
+                @empty
+                    <div class="empty-dashboard" style="grid-column: 1 / -1;">
+                        <h3>Nenhum serviço cadastrado</h3>
+                        <p>Cadastre clientes via <code>POST /api/clients/register</code> e envie os primeiros sinais de vida via <code>POST /api/heartbeat</code> para iniciar o monitoramento.</p>
                     </div>
-                </section>
-            @empty
-                <div class="empty-dashboard">
-                    <h3>Nenhum cliente ou serviço cadastrado</h3>
-                    <p>Cadastre clientes via <code>POST /api/clients/register</code> e envie os primeiros sinais de vida via <code>POST /api/heartbeat</code> para iniciar o monitoramento.</p>
-                </div>
-            @endforelse
+                @endforelse
+            </div>
         </main>
     </div>
 
@@ -1295,35 +1247,23 @@
 
         function filterServices() {
             const query = (document.getElementById('search-input')?.value || '').toLowerCase().trim();
-            const clientSections = document.querySelectorAll('.client-section');
+            const cards = document.querySelectorAll('.service-card');
 
-            clientSections.forEach(section => {
-                const clientName = section.dataset.clientName || '';
-                const serviceCards = section.querySelectorAll('.service-card');
-                let visibleServicesInClient = 0;
+            cards.forEach(card => {
+                const serviceName = card.dataset.serviceName || '';
+                const clientName = card.dataset.clientName || '';
+                const status = card.dataset.status || '';
 
-                serviceCards.forEach(card => {
-                    const serviceName = card.dataset.serviceName || '';
-                    const status = card.dataset.status || '';
+                const matchesQuery = clientName.includes(query) || serviceName.includes(query);
+                let matchesFilter = true;
 
-                    const matchesQuery = clientName.includes(query) || serviceName.includes(query);
-                    let matchesFilter = true;
+                if (currentFilter === 'alerts') {
+                    matchesFilter = (status === 'failed' || status === 'overdue');
+                } else if (currentFilter === 'ok') {
+                    matchesFilter = (status === 'ok');
+                }
 
-                    if (currentFilter === 'alerts') {
-                        matchesFilter = (status === 'failed' || status === 'overdue');
-                    } else if (currentFilter === 'ok') {
-                        matchesFilter = (status === 'ok');
-                    }
-
-                    if (matchesQuery && matchesFilter) {
-                        card.style.display = 'flex';
-                        visibleServicesInClient++;
-                    } else {
-                        card.style.display = 'none';
-                    }
-                });
-
-                section.style.display = visibleServicesInClient > 0 ? 'block' : 'none';
+                card.style.display = (matchesQuery && matchesFilter) ? 'flex' : 'none';
             });
         }
 
@@ -1393,14 +1333,14 @@
             return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
         }
 
-        function renderClientsList(clients) {
-            const container = document.getElementById('clients-container');
+        function renderServicesList(services) {
+            const container = document.getElementById('services-grid');
             if (!container) return;
 
-            if (!clients || clients.length === 0) {
+            if (!services || services.length === 0) {
                 container.innerHTML = `
-                    <div class="empty-dashboard">
-                        <h3>Nenhum cliente ou serviço cadastrado</h3>
+                    <div class="empty-dashboard" style="grid-column: 1 / -1;">
+                        <h3>Nenhum serviço cadastrado</h3>
                         <p>Cadastre clientes via <code>POST /api/clients/register</code> e envie os primeiros sinais de vida via <code>POST /api/heartbeat</code> para iniciar o monitoramento.</p>
                     </div>
                 `;
@@ -1408,135 +1348,109 @@
             }
 
             let html = '';
-            clients.forEach(client => {
-                const avatar = (client.name || 'CL').substring(0, 2).toUpperCase();
+            services.forEach(service => {
+                const status = service.computed_status || 'unknown';
+                const statusClass = status === 'ok' ? 'status--ok' : (status === 'failed' ? 'status--failed' : (status === 'overdue' ? 'status--overdue' : 'status--unknown'));
+                const statusLabel = service.status_label || (status === 'ok' ? 'Operacional' : (status === 'failed' ? 'Falha' : (status === 'overdue' ? 'Atrasado' : 'Aguardando')));
+                const isAlert = service.last_message || status === 'failed' || status === 'overdue';
+                const defaultAlertMsg = service.is_overdue ? 'Tempo de tolerância ultrapassado!' : 'Falha reportada pelo script.';
+                const isExpanded = expandedServiceIds.has(String(service.id));
+
                 html += `
-                    <section class="client-section" data-client-id="${client.id}" data-client-name="${escapeHtml((client.name || '').toLowerCase())}">
-                        <div class="client-header">
-                            <div class="client-title-row">
-                                <div class="client-avatar">${avatar}</div>
-                                <div>
-                                    <h2 class="client-name">${escapeHtml(client.name)}</h2>
-                                    <span class="client-slug">${escapeHtml(client.slug)}</span>
-                                </div>
+                    <article class="service-card ${status === 'failed' ? 'service-card--failed' : ''} ${isExpanded ? 'is-expanded' : ''}" data-service-id="${service.id}" data-service-name="${escapeHtml((service.name || '').toLowerCase())}" data-client-name="${escapeHtml((service.client_name || '').toLowerCase())}" data-status="${status}">
+                        <div class="service-card-head">
+                            <div class="service-title-wrap">
+                                <span class="service-client-badge" title="Cliente: ${escapeHtml(service.client_name)}">
+                                    <span>🏢</span>
+                                    <span>${escapeHtml(service.client_name || 'Cliente')}</span>
+                                </span>
+                                <h3 class="service-name" title="${escapeHtml(service.name)}">${escapeHtml(service.name)}</h3>
                             </div>
-                            <div class="client-badge-group">
-                                <span class="brand-badge">${client.services ? client.services.length : 0} serviço(s)</span>
+                            <span class="status-chip ${statusClass}">${statusLabel}</span>
+                        </div>
+
+                        <div class="service-quick-meta">
+                            <div class="quick-meta-item">
+                                <span class="quick-meta-label">Último Ping</span>
+                                <span class="quick-meta-val">${escapeHtml(service.last_ping_at_human)}</span>
+                            </div>
+                            <div class="quick-meta-item">
+                                <span class="quick-meta-label">Previsão / Prazo</span>
+                                <span class="quick-meta-val ${service.is_overdue ? 'alert' : 'highlight'}">${escapeHtml(service.next_expected_at_human)}</span>
                             </div>
                         </div>
 
-                        <div class="client-services-grid">
+                        ${isAlert ? `
+                            <div class="service-mini-alert" title="${escapeHtml(service.last_message || defaultAlertMsg)}">
+                                <span>⚠️</span>
+                                <span class="mini-alert-text">${escapeHtml(service.last_message || defaultAlertMsg)}</span>
+                            </div>
+                        ` : ''}
+
+                        <div class="service-card-foot">
+                            <div class="service-summary-tag">
+                                <span>🔄 ${service.interval_minutes}m</span>
+                                ${service.logs && service.logs.length > 0 ? `<span>• 📄 ${service.logs.length} log(s)</span>` : ''}
+                            </div>
+                            <button type="button" class="btn-toggle-details" onclick="toggleServiceDetails(this, '${service.id}')">
+                                <span class="toggle-text">${isExpanded ? 'Ocultar' : 'Detalhes'}</span>
+                                <span class="toggle-arrow">▾</span>
+                            </button>
+                        </div>
+
+                        <div class="service-card-details">
+                            <div class="service-meta-grid">
+                                <div class="meta-item">
+                                    <span class="meta-label">Periodicidade</span>
+                                    <span class="meta-value">${service.interval_minutes} min (tol: ${service.grace_minutes}m)</span>
+                                </div>
+                                <div class="meta-item">
+                                    <span class="meta-label">Data Último Ping</span>
+                                    <span class="meta-value">${escapeHtml(service.last_ping_at_formatted)}</span>
+                                </div>
+                                <div class="meta-item">
+                                    <span class="meta-label">IP / Origem</span>
+                                    <span class="meta-value">${escapeHtml(service.last_ip || 'Não detectado')}</span>
+                                </div>
+                            </div>
+
+                            ${service.last_message ? `
+                                <div class="service-alert-banner">
+                                    <span>💬</span>
+                                    <span>${escapeHtml(service.last_message)}</span>
+                                </div>
+                            ` : ''}
+
+                            <div class="service-logs-area">
+                                <div class="logs-heading">
+                                    <span>Últimos Logs Recebidos</span>
+                                    <span>${service.logs ? service.logs.length : 0} log(s)</span>
+                                </div>
                 `;
 
-                if (!client.services || client.services.length === 0) {
-                    html += `<div class="empty-logs" style="grid-column: 1 / -1;">Nenhum serviço registrado para este cliente ainda.</div>`;
+                if (!service.logs || service.logs.length === 0) {
+                    html += `<div class="empty-logs">Nenhum arquivo de log anexado recentemente.</div>`;
                 } else {
-                    client.services.forEach(service => {
-                        const status = service.computed_status || 'unknown';
-                        const statusClass = status === 'ok' ? 'status--ok' : (status === 'failed' ? 'status--failed' : (status === 'overdue' ? 'status--overdue' : 'status--unknown'));
-                        const statusLabel = service.status_label || (status === 'ok' ? 'Operacional' : (status === 'failed' ? 'Falha' : (status === 'overdue' ? 'Atrasado' : 'Aguardando')));
-                        const isAlert = service.last_message || status === 'failed' || status === 'overdue';
-                        const defaultAlertMsg = service.is_overdue ? 'Tempo de tolerância ultrapassado!' : 'Falha reportada pelo script.';
-                        const isExpanded = expandedServiceIds.has(String(service.id));
-
+                    service.logs.forEach(log => {
+                        const b64 = log.log_excerpt ? btoa(unescape(encodeURIComponent(log.log_excerpt))) : '';
                         html += `
-                            <article class="service-card ${status === 'failed' ? 'service-card--failed' : ''} ${isExpanded ? 'is-expanded' : ''}" data-service-id="${service.id}" data-service-name="${escapeHtml((service.name || '').toLowerCase())}" data-status="${status}">
-                                <div class="service-card-head">
-                                    <div class="service-title-wrap">
-                                        <h3 class="service-name" title="${escapeHtml(service.name)}">${escapeHtml(service.name)}</h3>
-                                    </div>
-                                    <span class="status-chip ${statusClass}">${statusLabel}</span>
+                            <div class="log-row">
+                                <span class="log-file" title="${escapeHtml(log.filename)}">${escapeHtml(log.filename || 'log.txt')}</span>
+                                <span class="log-date">${escapeHtml(log.received_at_formatted)}</span>
+                                <span class="meta-value" style="font-size: 10px;">${escapeHtml(log.file_size_formatted)}</span>
+                                <div class="log-actions">
+                                    ${log.log_excerpt ? `<button class="btn-log-action" onclick="showLogModal('${escapeHtml(service.name)}', '${escapeHtml(log.filename)}', '${b64}', '${log.download_url}')">Preview</button>` : ''}
+                                    <a href="${log.download_url}" class="btn-log-action" target="_blank" download>Baixar</a>
                                 </div>
-
-                                <div class="service-quick-meta">
-                                    <div class="quick-meta-item">
-                                        <span class="quick-meta-label">Último Ping</span>
-                                        <span class="quick-meta-val">${escapeHtml(service.last_ping_at_human)}</span>
-                                    </div>
-                                    <div class="quick-meta-item">
-                                        <span class="quick-meta-label">Previsão / Prazo</span>
-                                        <span class="quick-meta-val ${service.is_overdue ? 'alert' : 'highlight'}">${escapeHtml(service.next_expected_at_human)}</span>
-                                    </div>
-                                </div>
-
-                                ${isAlert ? `
-                                    <div class="service-mini-alert" title="${escapeHtml(service.last_message || defaultAlertMsg)}">
-                                        <span>⚠️</span>
-                                        <span class="mini-alert-text">${escapeHtml(service.last_message || defaultAlertMsg)}</span>
-                                    </div>
-                                ` : ''}
-
-                                <div class="service-card-foot">
-                                    <div class="service-summary-tag">
-                                        <span>🔄 ${service.interval_minutes}m</span>
-                                        ${service.logs && service.logs.length > 0 ? `<span>• 📄 ${service.logs.length} log(s)</span>` : ''}
-                                    </div>
-                                    <button type="button" class="btn-toggle-details" onclick="toggleServiceDetails(this, '${service.id}')">
-                                        <span class="toggle-text">${isExpanded ? 'Ocultar' : 'Detalhes'}</span>
-                                        <span class="toggle-arrow">▾</span>
-                                    </button>
-                                </div>
-
-                                <div class="service-card-details">
-                                    <div class="service-meta-grid">
-                                        <div class="meta-item">
-                                            <span class="meta-label">Periodicidade</span>
-                                            <span class="meta-value">${service.interval_minutes} min (tol: ${service.grace_minutes}m)</span>
-                                        </div>
-                                        <div class="meta-item">
-                                            <span class="meta-label">Data Último Ping</span>
-                                            <span class="meta-value">${escapeHtml(service.last_ping_at_formatted)}</span>
-                                        </div>
-                                        <div class="meta-item">
-                                            <span class="meta-label">IP / Origem</span>
-                                            <span class="meta-value">${escapeHtml(service.last_ip || 'Não detectado')}</span>
-                                        </div>
-                                    </div>
-
-                                    ${service.last_message ? `
-                                        <div class="service-alert-banner">
-                                            <span>💬</span>
-                                            <span>${escapeHtml(service.last_message)}</span>
-                                        </div>
-                                    ` : ''}
-
-                                    <div class="service-logs-area">
-                                        <div class="logs-heading">
-                                            <span>Últimos Logs Recebidos</span>
-                                            <span>${service.logs ? service.logs.length : 0} log(s)</span>
-                                        </div>
-                        `;
-
-                        if (!service.logs || service.logs.length === 0) {
-                            html += `<div class="empty-logs">Nenhum arquivo de log anexado recentemente.</div>`;
-                        } else {
-                            service.logs.forEach(log => {
-                                const b64 = log.log_excerpt ? btoa(unescape(encodeURIComponent(log.log_excerpt))) : '';
-                                html += `
-                                    <div class="log-row">
-                                        <span class="log-file" title="${escapeHtml(log.filename)}">${escapeHtml(log.filename || 'log.txt')}</span>
-                                        <span class="log-date">${escapeHtml(log.received_at_formatted)}</span>
-                                        <span class="meta-value" style="font-size: 10px;">${escapeHtml(log.file_size_formatted)}</span>
-                                        <div class="log-actions">
-                                            ${log.log_excerpt ? `<button class="btn-log-action" onclick="showLogModal('${escapeHtml(service.name)}', '${escapeHtml(log.filename)}', '${b64}', '${log.download_url}')">Preview</button>` : ''}
-                                            <a href="${log.download_url}" class="btn-log-action" target="_blank" download>Baixar</a>
-                                        </div>
-                                    </div>
-                                `;
-                            });
-                        }
-
-                        html += `
-                                    </div>
-                                </div>
-                            </article>
+                            </div>
                         `;
                     });
                 }
 
                 html += `
+                            </div>
                         </div>
-                    </section>
+                    </article>
                 `;
             });
 
@@ -1561,8 +1475,8 @@
                     document.getElementById('metric-logs-today').textContent = data.metrics.logs_today;
                 }
 
-                if (data.clients) {
-                    renderClientsList(data.clients);
+                if (data.services) {
+                    renderServicesList(data.services);
                 }
             } catch (e) {
                 console.error('Polling error:', e);
