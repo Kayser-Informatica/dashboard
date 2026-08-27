@@ -96,15 +96,24 @@ class HeartbeatController extends Controller
         // Processamento de upload de arquivo de log se enviado
         if ($request->hasFile('log_file')) {
             $file = $request->file('log_file');
+            $originalFilename = Str::limit($file->getClientOriginalName() ?: 'log.txt', 255, '');
+            $fileSize = $file->getSize() ?: 0;
+
+            // Ler o conteúdo antes de armazenar e sanitizar UTF-8 para evitar falhas de encoding
+            $rawContent = (string) $file->get();
+            if (! mb_check_encoding($rawContent, 'UTF-8')) {
+                $rawContent = mb_convert_encoding($rawContent, 'UTF-8', 'ISO-8859-1, Windows-1252, UTF-8');
+            }
+            $cleanContent = iconv('UTF-8', 'UTF-8//IGNORE', $rawContent) ?: $rawContent;
+
             $storedPath = $file->store('service-logs');
-            $content = (string) file_get_contents($file->getRealPath());
 
             $serviceLog = new ServiceLog([
                 'status' => $status,
-                'original_filename' => Str::limit($file->getClientOriginalName(), 255, ''),
+                'original_filename' => $originalFilename,
                 'stored_path' => $storedPath,
-                'file_size' => $file->getSize() ?: 0,
-                'log_excerpt' => Str::limit(trim($content), 5000),
+                'file_size' => $fileSize,
+                'log_excerpt' => Str::limit(trim($cleanContent), 5000),
                 'message' => $validated['message'] ?? null,
                 'duration_seconds' => $validated['duration_seconds'] ?? null,
                 'ip' => $clientIp,

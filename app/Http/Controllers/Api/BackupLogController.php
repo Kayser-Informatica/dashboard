@@ -38,17 +38,26 @@ class BackupLogController extends Controller
         }
 
         $file = $request->file('log_file');
+        $originalFilename = Str::limit($file->getClientOriginalName() ?: 'log.txt', 255, '');
+        $fileSize = $file->getSize() ?: 0;
+
+        // Ler o conteúdo antes de armazenar e sanitizar UTF-8
+        $rawContent = (string) $file->get();
+        if (! mb_check_encoding($rawContent, 'UTF-8')) {
+            $rawContent = mb_convert_encoding($rawContent, 'UTF-8', 'ISO-8859-1, Windows-1252, UTF-8');
+        }
+        $cleanContent = iconv('UTF-8', 'UTF-8//IGNORE', $rawContent) ?: $rawContent;
+
         $storedPath = $file->store('backup-logs');
-        $content = (string) file_get_contents($file->getRealPath());
         $receivedAt = now();
 
         $backupLog = BackupLog::create([
             'system_id' => $system->id,
             'status' => $validated['status'] ?? 'received',
-            'original_filename' => Str::limit($file->getClientOriginalName(), 255, ''),
+            'original_filename' => $originalFilename,
             'stored_path' => $storedPath,
-            'file_size' => $file->getSize() ?: 0,
-            'log_excerpt' => Str::limit(trim($content), 5000),
+            'file_size' => $fileSize,
+            'log_excerpt' => Str::limit(trim($cleanContent), 5000),
             'received_at' => $receivedAt,
         ]);
 
