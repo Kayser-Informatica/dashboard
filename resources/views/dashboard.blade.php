@@ -668,87 +668,146 @@
         }
 
         .toggle-arrow {
-            font-size: 10px;
-            transition: transform 0.25s ease;
+            font-size: 11px;
             display: inline-block;
         }
 
-        /* Collapsible Details Area */
-        .service-card-details {
+        /* Modals & Overlays */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(4px);
             display: none;
-            border-top: 1px solid var(--line);
-            background: rgba(0, 0, 0, 0.25);
-            animation: fadeIn 0.2s ease;
+            place-items: center;
+            padding: 20px;
         }
 
-        .service-card.is-expanded .service-card-details {
-            display: block;
+        #service-details-modal {
+            z-index: 1000;
         }
 
-        .service-card.is-expanded .btn-toggle-details {
-            background: rgba(14, 165, 233, 0.15);
-            border-color: rgba(56, 189, 248, 0.4);
-            color: #38bdf8;
+        #log-modal {
+            z-index: 1100;
         }
 
-        .service-card.is-expanded .toggle-arrow {
-            transform: rotate(180deg);
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-4px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* Meta Grid inside Details */
-        .service-meta-grid {
+        .modal-overlay.active {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-            padding: 12px 14px;
-            background: rgba(0, 0, 0, 0.2);
-            border-bottom: 1px solid var(--line);
         }
 
-        .meta-item {
+        .modal-content {
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: var(--radius-lg);
+            width: 100%;
+            max-width: 800px;
+            max-height: 88vh;
             display: flex;
             flex-direction: column;
-            gap: 3px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+            animation: modalPopIn 0.2s ease-out;
         }
 
-        .meta-label {
-            font-size: 10px;
+        .modal-content--wide {
+            max-width: 760px;
+        }
+
+        @keyframes modalPopIn {
+            from { opacity: 0; transform: scale(0.96) translateY(8px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+
+        .modal-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 20px;
+            border-bottom: 1px solid #1e293b;
+            gap: 12px;
+        }
+
+        .modal-head-title-wrap {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            min-width: 0;
+        }
+
+        .modal-title {
+            font-size: 15px;
             font-weight: 700;
-            letter-spacing: 0.06em;
-            text-transform: uppercase;
-            color: var(--ink-subtle);
-        }
-
-        .meta-value {
-            font-size: 12px;
-            font-weight: 600;
-            color: var(--ink);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .meta-value--highlight {
-            color: #38bdf8;
+            color: #fff;
+            margin: 0;
             font-family: 'JetBrains Mono', monospace;
         }
 
-        .meta-value--alert {
-            color: #f87171;
-            font-weight: 700;
+        .modal-close {
+            background: transparent;
+            border: none;
+            color: var(--ink-muted);
+            font-size: 22px;
+            cursor: pointer;
+            line-height: 1;
+            padding: 4px 8px;
+            border-radius: 4px;
+            transition: all 0.2s;
         }
 
-        /* Alert Banner inside Details */
+        .modal-close:hover {
+            color: #fff;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .modal-body {
+            padding: 20px;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        /* Service Details Modal Specifics */
+        .service-modal-meta-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        .service-modal-card {
+            background: var(--bg-meta);
+            border: 1px solid var(--line);
+            border-radius: var(--radius-sm);
+            padding: 10px 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .service-modal-card .meta-label {
+            font-size: 10px;
+            font-weight: 700;
+            color: var(--ink-subtle);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .service-modal-card .meta-value {
+            font-size: 12px;
+            font-weight: 600;
+            color: #ffffff;
+            line-height: 1.3;
+        }
+
+        /* Alert Banner */
         .service-alert-banner {
-            padding: 8px 14px;
-            font-size: 11px;
+            padding: 10px 14px;
+            font-size: 12px;
             background: rgba(244, 63, 94, 0.12);
-            border-bottom: 1px solid rgba(244, 63, 94, 0.25);
+            border: 1px solid rgba(244, 63, 94, 0.35);
+            border-radius: var(--radius-sm);
             color: #fca5a5;
             display: flex;
             align-items: flex-start;
@@ -756,9 +815,8 @@
             line-height: 1.4;
         }
 
-        /* Logs Area */
+        /* Logs Area inside Modal */
         .service-logs-area {
-            padding: 12px 14px 14px;
             display: flex;
             flex-direction: column;
             gap: 8px;
@@ -780,7 +838,7 @@
             grid-template-columns: 1fr auto auto auto;
             align-items: center;
             gap: 8px;
-            padding: 6px 10px;
+            padding: 8px 12px;
             background: var(--bg-meta);
             border: 1px solid var(--line);
             border-radius: var(--radius-sm);
@@ -811,8 +869,8 @@
             border: 1px solid var(--line);
             color: var(--ink-muted);
             border-radius: 4px;
-            padding: 3px 8px;
-            font-size: 10px;
+            padding: 4px 10px;
+            font-size: 11px;
             font-weight: 600;
             text-decoration: none;
             cursor: pointer;
@@ -826,96 +884,13 @@
         }
 
         .empty-logs {
-            padding: 10px;
+            padding: 14px;
             text-align: center;
             color: var(--ink-subtle);
-            font-size: 11px;
+            font-size: 12px;
             background: var(--bg-meta);
             border: 1px dashed var(--line);
             border-radius: var(--radius-sm);
-        }
-
-        .view-toggle-btn {
-            background: var(--bg-meta);
-            border: 1px solid var(--line);
-            color: var(--ink-muted);
-            font-size: 12px;
-            font-weight: 600;
-            padding: 6px 14px;
-            border-radius: var(--radius-sm);
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            transition: all 0.2s;
-            white-space: nowrap;
-        }
-
-        .view-toggle-btn:hover {
-            color: #38bdf8;
-            border-color: rgba(56, 189, 248, 0.4);
-            background: rgba(14, 165, 233, 0.1);
-        }
-
-        /* Modal Log Viewer */
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.75);
-            backdrop-filter: blur(4px);
-            display: none;
-            place-items: center;
-            z-index: 1000;
-            padding: 20px;
-        }
-
-        .modal-overlay.active {
-            display: grid;
-        }
-
-        .modal-content {
-            background: #0f172a;
-            border: 1px solid #334155;
-            border-radius: var(--radius-lg);
-            width: 100%;
-            max-width: 800px;
-            max-height: 85vh;
-            display: flex;
-            flex-direction: column;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
-        }
-
-        .modal-head {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 16px 20px;
-            border-bottom: 1px solid #1e293b;
-        }
-
-        .modal-title {
-            font-size: 15px;
-            font-weight: 700;
-            color: #fff;
-            margin: 0;
-            font-family: 'JetBrains Mono', monospace;
-        }
-
-        .modal-close {
-            background: transparent;
-            border: none;
-            color: var(--ink-muted);
-            font-size: 20px;
-            cursor: pointer;
-        }
-
-        .modal-body {
-            padding: 20px;
-            overflow-y: auto;
-            flex: 1;
         }
 
         .log-terminal {
@@ -1068,12 +1043,6 @@
                 <button class="filter-btn" data-filter="alerts" onclick="setFilter('alerts')">🔴 Com Alertas</button>
                 <button class="filter-btn" data-filter="ok" onclick="setFilter('ok')">🟢 Saudáveis</button>
             </div>
-            <div class="filter-actions">
-                <button type="button" class="view-toggle-btn" id="btn-toggle-all" onclick="toggleAllDetails()">
-                    <span id="toggle-all-icon">⊞</span>
-                    <span id="toggle-all-text">Expandir Todos</span>
-                </button>
-            </div>
         </div>
 
         <!-- Services Area (Flat Grid) -->
@@ -1096,7 +1065,7 @@
                         };
                     @endphp
 
-                    <article class="service-card {{ $status === 'failed' ? 'service-card--failed' : '' }}" data-service-id="{{ $service->id }}" data-service-name="{{ strtolower($service->name) }}" data-client-name="{{ strtolower($service->client?->name ?? '') }}" data-status="{{ $status }}">
+                    <article class="service-card {{ $status === 'failed' ? 'service-card--failed' : '' }}" data-service-id="{{ $service->id }}" data-service-name="{{ strtolower($service->name) }}" data-client-name="{{ strtolower($service->client?->name ?? '') }}" data-status="{{ $status }}" onclick="openServiceModal('{{ $service->id }}')" style="cursor: pointer;">
                         <div class="service-card-head">
                             <div class="service-title-wrap">
                                 <span class="service-client-badge" title="Cliente: {{ $service->client?->name }}">
@@ -1139,57 +1108,10 @@
                                     <span>• 📄 {{ $service->serviceLogs->count() }} log(s)</span>
                                 @endif
                             </div>
-                            <button type="button" class="btn-toggle-details" onclick="toggleServiceDetails(this, '{{ $service->id }}')">
+                            <button type="button" class="btn-toggle-details" onclick="event.stopPropagation(); openServiceModal('{{ $service->id }}')">
                                 <span class="toggle-text">Detalhes</span>
-                                <span class="toggle-arrow">▾</span>
+                                <span class="toggle-arrow">↗</span>
                             </button>
-                        </div>
-
-                        <div class="service-card-details">
-                            <div class="service-meta-grid">
-                                <div class="meta-item">
-                                    <span class="meta-label">Periodicidade</span>
-                                    <span class="meta-value">{{ $service->expected_interval_minutes }} min (tol: {{ $service->grace_period_minutes }}m)</span>
-                                </div>
-                                <div class="meta-item">
-                                    <span class="meta-label">Data Último Ping</span>
-                                    <span class="meta-value">{{ $service->last_ping_at ? $service->last_ping_at->format('d/m/Y H:i:s') : 'Nunca' }}</span>
-                                </div>
-                                <div class="meta-item">
-                                    <span class="meta-label">IP / Origem</span>
-                                    <span class="meta-value">{{ $service->last_ip ?? 'Não detectado' }}</span>
-                                </div>
-                            </div>
-
-                            @if($service->last_message)
-                                <div class="service-alert-banner">
-                                    <span>💬</span>
-                                    <span>{{ $service->last_message }}</span>
-                                </div>
-                            @endif
-
-                            <div class="service-logs-area">
-                                <div class="logs-heading">
-                                    <span>Últimos Logs Recebidos</span>
-                                    <span>{{ $service->serviceLogs->count() }} log(s)</span>
-                                </div>
-
-                                @forelse($service->serviceLogs as $log)
-                                    <div class="log-row">
-                                        <span class="log-file" title="{{ $log->original_filename }}">{{ $log->original_filename ?: 'log.txt' }}</span>
-                                        <span class="log-date">{{ $log->received_at->format('d/m H:i') }}</span>
-                                        <span class="meta-value" style="font-size: 10px;">{{ number_format($log->file_size / 1024, 1) }} KB</span>
-                                        <div class="log-actions">
-                                            @if($log->log_excerpt)
-                                                <button class="btn-log-action" onclick="showLogModal('{{ addslashes($service->name) }}', '{{ addslashes($log->original_filename) }}', '{{ base64_encode($log->log_excerpt) }}', '{{ route('api.services.logs.download', ['service' => $service->id, 'log' => $log->id]) }}')">Preview</button>
-                                            @endif
-                                            <a href="{{ route('api.services.logs.download', ['service' => $service->id, 'log' => $log->id]) }}" class="btn-log-action" target="_blank" download>Baixar</a>
-                                        </div>
-                                    </div>
-                                @empty
-                                    <div class="empty-logs">Nenhum arquivo de log anexado recentemente.</div>
-                                @endforelse
-                            </div>
                         </div>
                     </article>
                 @empty
@@ -1202,8 +1124,72 @@
         </main>
     </div>
 
-    <!-- Modal Viewer -->
-    <div class="modal-overlay" id="log-modal">
+    <!-- Modal Detalhes do Serviço -->
+    <div class="modal-overlay" id="service-details-modal" onclick="if(event.target === this) closeServiceDetailsModal()">
+        <div class="modal-content modal-content--wide">
+            <div class="modal-head">
+                <div class="modal-head-title-wrap">
+                    <span class="service-client-badge" id="modal-service-client">🏢 CLIENTE</span>
+                    <h3 class="modal-title" id="modal-service-name" style="font-size: 16px;">Nome do Serviço</h3>
+                </div>
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <span class="status-chip" id="modal-service-status-chip">Operacional</span>
+                    <button class="modal-close" onclick="closeServiceDetailsModal()">&times;</button>
+                </div>
+            </div>
+            <div class="modal-body" id="modal-service-body">
+                <div class="service-modal-meta-grid">
+                    <div class="service-modal-card">
+                        <span class="meta-label">Periodicidade</span>
+                        <span class="meta-value" id="sm-interval">-</span>
+                    </div>
+                    <div class="service-modal-card">
+                        <span class="meta-label">Último Ping</span>
+                        <span class="meta-value" id="sm-last-ping">-</span>
+                    </div>
+                    <div class="service-modal-card">
+                        <span class="meta-label">Previsão / Prazo</span>
+                        <span class="meta-value" id="sm-next-expected">-</span>
+                    </div>
+                    <div class="service-modal-card">
+                        <span class="meta-label">IP / Origem</span>
+                        <span class="meta-value" id="sm-ip">-</span>
+                    </div>
+                    <div class="service-modal-card">
+                        <span class="meta-label">Duração da Execução</span>
+                        <span class="meta-value" id="sm-duration">-</span>
+                    </div>
+                    <div class="service-modal-card">
+                        <span class="meta-label">E-mails de Notificação</span>
+                        <span class="meta-value" id="sm-emails" style="font-size: 11px; word-break: break-all;">-</span>
+                    </div>
+                </div>
+
+                <div id="sm-alert-box" style="display: none; margin-bottom: 16px;">
+                    <div class="service-alert-banner">
+                        <span>💬</span>
+                        <span id="sm-alert-text"></span>
+                    </div>
+                </div>
+
+                <div class="service-logs-area">
+                    <div class="logs-heading" style="margin-bottom: 8px;">
+                        <span>Histórico de Logs Anexados</span>
+                        <span id="sm-logs-count">0 log(s)</span>
+                    </div>
+                    <div id="sm-logs-list">
+                        <!-- Itens dinâmicos -->
+                    </div>
+                </div>
+            </div>
+            <div class="modal-foot">
+                <button class="btn-log-action" style="padding: 8px 18px; font-size: 12px;" onclick="closeServiceDetailsModal()">Fechar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Viewer de Log -->
+    <div class="modal-overlay" id="log-modal" onclick="if(event.target === this) closeLogModal()">
         <div class="modal-content">
             <div class="modal-head">
                 <h4 class="modal-title" id="modal-log-title">Visualizador de Log</h4>
@@ -1221,8 +1207,63 @@
 
     <script>
         let currentFilter = 'all';
-        const expandedServiceIds = new Set();
-        let allExpanded = false;
+        let servicesDataMap = {};
+
+        // Inicializar o mapa de serviços a partir dos dados do Blade
+        const initialServices = @json($services->map(function($service) {
+            $computedStatus = $service->computed_status;
+            $deadline = $service->next_expected_at;
+            $statusLabel = match ($computedStatus) {
+                'ok' => 'Operacional',
+                'overdue' => 'Atrasado',
+                'failed' => 'Falha',
+                default => 'Aguardando',
+            };
+            return [
+                'id' => $service->id,
+                'name' => $service->name,
+                'slug' => $service->slug,
+                'client_id' => $service->client_id,
+                'client_name' => $service->client?->name ?? 'Cliente',
+                'client_slug' => $service->client?->slug ?? '',
+                'interval_minutes' => $service->expected_interval_minutes,
+                'grace_minutes' => $service->grace_period_minutes,
+                'notification_emails' => $service->notification_emails,
+                'computed_status' => $computedStatus,
+                'status_label' => $statusLabel,
+                'is_overdue' => $service->is_overdue,
+                'last_message' => $service->last_message,
+                'last_duration_seconds' => $service->last_duration_seconds,
+                'last_duration_formatted' => $service->last_duration_seconds !== null ? "{$service->last_duration_seconds}s" : 'Não informada',
+                'last_ip' => $service->last_ip ?? 'Não detectado',
+                'last_ping_at' => $service->last_ping_at?->toIso8601String(),
+                'last_ping_at_formatted' => $service->last_ping_at?->format('d/m/Y H:i:s') ?? 'Nunca',
+                'last_ping_at_human' => $service->last_ping_at?->diffForHumans() ?? 'Nunca',
+                'next_expected_at' => $deadline?->toIso8601String(),
+                'next_expected_at_formatted' => $deadline?->format('d/m/Y H:i:s') ?? 'Sem periodicidade',
+                'next_expected_at_human' => $deadline ? ($service->is_overdue ? 'Atrasado há ' . $deadline->diffForHumans(null, true) : 'Previsto ' . $deadline->diffForHumans()) : 'Sem periodicidade',
+                'logs_count' => $service->serviceLogs->count(),
+                'logs' => $service->serviceLogs->map(function ($log) use ($service) {
+                    return [
+                        'id' => $log->id,
+                        'status' => $log->status,
+                        'filename' => $log->original_filename,
+                        'file_size' => $log->file_size,
+                        'file_size_formatted' => number_format($log->file_size / 1024, 1, ',', '.') . ' KB',
+                        'log_excerpt' => $log->log_excerpt,
+                        'download_url' => route('api.services.logs.download', ['service' => $service->id, 'log' => $log->id]),
+                        'received_at' => $log->received_at?->toIso8601String(),
+                        'received_at_formatted' => $log->received_at?->format('d/m/Y H:i:s') ?? '-',
+                    ];
+                })->values(),
+            ];
+        }));
+
+        if (Array.isArray(initialServices)) {
+            initialServices.forEach(s => {
+                servicesDataMap[String(s.id)] = s;
+            });
+        }
 
         function updateClock() {
             const now = new Date();
@@ -1267,46 +1308,66 @@
             });
         }
 
-        function toggleServiceDetails(btn, serviceId) {
-            const card = btn.closest('.service-card');
-            if (!card) return;
+        function openServiceModal(serviceId) {
+            const service = servicesDataMap[String(serviceId)];
+            if (!service) return;
 
-            const isExpanded = card.classList.toggle('is-expanded');
-            const textSpan = btn.querySelector('.toggle-text');
+            document.getElementById('modal-service-client').innerHTML = `<span>🏢</span> <span>${escapeHtml(service.client_name || 'Cliente')}</span>`;
+            document.getElementById('modal-service-name').textContent = service.name || 'Serviço';
 
-            if (isExpanded) {
-                expandedServiceIds.add(String(serviceId));
-                if (textSpan) textSpan.textContent = 'Ocultar';
+            const statusChip = document.getElementById('modal-service-status-chip');
+            const status = service.computed_status || 'unknown';
+            const statusClass = status === 'ok' ? 'status--ok' : (status === 'failed' ? 'status--failed' : (status === 'overdue' ? 'status--overdue' : 'status--unknown'));
+            statusChip.className = `status-chip ${statusClass}`;
+            statusChip.textContent = service.status_label || (status === 'ok' ? 'Operacional' : (status === 'failed' ? 'Falha' : (status === 'overdue' ? 'Atrasado' : 'Aguardando')));
+
+            document.getElementById('sm-interval').textContent = `${service.interval_minutes} min (tol: ${service.grace_minutes}m)`;
+            document.getElementById('sm-last-ping').textContent = `${service.last_ping_at_human} (${service.last_ping_at_formatted})`;
+            document.getElementById('sm-next-expected').textContent = service.next_expected_at_human + (service.next_expected_at_formatted && service.next_expected_at_formatted !== 'Sem periodicidade' ? ` (${service.next_expected_at_formatted})` : '');
+            document.getElementById('sm-ip').textContent = service.last_ip || 'Não detectado';
+            document.getElementById('sm-duration').textContent = service.last_duration_formatted || 'Não informada';
+            document.getElementById('sm-emails').textContent = service.notification_emails || 'Nenhum e-mail configurado';
+
+            const alertBox = document.getElementById('sm-alert-box');
+            const alertText = document.getElementById('sm-alert-text');
+            if (service.last_message || status === 'failed' || status === 'overdue') {
+                alertBox.style.display = 'block';
+                alertText.textContent = service.last_message || (service.is_overdue ? 'Tempo de tolerância ultrapassado! Sem sinal de vida no intervalo previsto.' : 'Falha reportada na execução do serviço.');
             } else {
-                expandedServiceIds.delete(String(serviceId));
-                if (textSpan) textSpan.textContent = 'Detalhes';
+                alertBox.style.display = 'none';
             }
+
+            const logsCount = document.getElementById('sm-logs-count');
+            const logsList = document.getElementById('sm-logs-list');
+            const logs = service.logs || [];
+            logsCount.textContent = `${logs.length} log(s)`;
+
+            if (logs.length === 0) {
+                logsList.innerHTML = `<div class="empty-logs">Nenhum arquivo de log anexado recentemente para este serviço.</div>`;
+            } else {
+                let logsHtml = '';
+                logs.forEach(log => {
+                    const b64 = log.log_excerpt ? btoa(unescape(encodeURIComponent(log.log_excerpt))) : '';
+                    logsHtml += `
+                        <div class="log-row" style="margin-bottom: 6px;">
+                            <span class="log-file" title="${escapeHtml(log.filename)}">${escapeHtml(log.filename || 'log.txt')}</span>
+                            <span class="log-date">${escapeHtml(log.received_at_formatted)}</span>
+                            <span class="meta-value" style="font-size: 10px;">${escapeHtml(log.file_size_formatted)}</span>
+                            <div class="log-actions">
+                                ${log.log_excerpt ? `<button class="btn-log-action" onclick="showLogModal('${escapeHtml(service.name)}', '${escapeHtml(log.filename)}', '${b64}', '${log.download_url}')">Preview</button>` : ''}
+                                <a href="${log.download_url}" class="btn-log-action" target="_blank" download>Baixar</a>
+                            </div>
+                        </div>
+                    `;
+                });
+                logsList.innerHTML = logsHtml;
+            }
+
+            document.getElementById('service-details-modal').classList.add('active');
         }
 
-        function toggleAllDetails() {
-            allExpanded = !allExpanded;
-            const cards = document.querySelectorAll('.service-card');
-            const textElem = document.getElementById('toggle-all-text');
-            const iconElem = document.getElementById('toggle-all-icon');
-
-            cards.forEach(card => {
-                const serviceId = card.dataset.serviceId;
-                const toggleBtn = card.querySelector('.btn-toggle-details');
-                const textSpan = toggleBtn ? toggleBtn.querySelector('.toggle-text') : null;
-
-                if (allExpanded) {
-                    card.classList.add('is-expanded');
-                    if (serviceId) expandedServiceIds.add(String(serviceId));
-                    if (textSpan) textSpan.textContent = 'Ocultar';
-                } else {
-                    card.classList.remove('is-expanded');
-                    if (serviceId) expandedServiceIds.delete(String(serviceId));
-                    if (textSpan) textSpan.textContent = 'Detalhes';
-                }
-            });
-
-            if (textElem) textElem.textContent = allExpanded ? 'Recolher Todos' : 'Expandir Todos';
-            if (iconElem) iconElem.textContent = allExpanded ? '⊟' : '⊞';
+        function closeServiceDetailsModal() {
+            document.getElementById('service-details-modal').classList.remove('active');
         }
 
         function showLogModal(serviceName, filename, b64Content, downloadUrl) {
@@ -1323,6 +1384,18 @@
         function closeLogModal() {
             document.getElementById('log-modal').classList.remove('active');
         }
+
+        // Fechar modais ao pressionar tecla ESC
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                const logModal = document.getElementById('log-modal');
+                if (logModal && logModal.classList.contains('active')) {
+                    closeLogModal();
+                } else {
+                    closeServiceDetailsModal();
+                }
+            }
+        });
 
         // Auto Refresh Polling com Contagem Regressiva & Renderização Dinâmica
         const refreshInterval = {{ $refreshInterval ?? 30 }};
@@ -1347,6 +1420,11 @@
                 return;
             }
 
+            // Atualizar mapa de dados dos serviços
+            services.forEach(s => {
+                servicesDataMap[String(s.id)] = s;
+            });
+
             let html = '';
             services.forEach(service => {
                 const status = service.computed_status || 'unknown';
@@ -1354,10 +1432,9 @@
                 const statusLabel = service.status_label || (status === 'ok' ? 'Operacional' : (status === 'failed' ? 'Falha' : (status === 'overdue' ? 'Atrasado' : 'Aguardando')));
                 const isAlert = service.last_message || status === 'failed' || status === 'overdue';
                 const defaultAlertMsg = service.is_overdue ? 'Tempo de tolerância ultrapassado!' : 'Falha reportada pelo script.';
-                const isExpanded = expandedServiceIds.has(String(service.id));
 
                 html += `
-                    <article class="service-card ${status === 'failed' ? 'service-card--failed' : ''} ${isExpanded ? 'is-expanded' : ''}" data-service-id="${service.id}" data-service-name="${escapeHtml((service.name || '').toLowerCase())}" data-client-name="${escapeHtml((service.client_name || '').toLowerCase())}" data-status="${status}">
+                    <article class="service-card ${status === 'failed' ? 'service-card--failed' : ''}" data-service-id="${service.id}" data-service-name="${escapeHtml((service.name || '').toLowerCase())}" data-client-name="${escapeHtml((service.client_name || '').toLowerCase())}" data-status="${status}" onclick="openServiceModal('${service.id}')" style="cursor: pointer;">
                         <div class="service-card-head">
                             <div class="service-title-wrap">
                                 <span class="service-client-badge" title="Cliente: ${escapeHtml(service.client_name)}">
@@ -1392,63 +1469,10 @@
                                 <span>🔄 ${service.interval_minutes}m</span>
                                 ${service.logs && service.logs.length > 0 ? `<span>• 📄 ${service.logs.length} log(s)</span>` : ''}
                             </div>
-                            <button type="button" class="btn-toggle-details" onclick="toggleServiceDetails(this, '${service.id}')">
-                                <span class="toggle-text">${isExpanded ? 'Ocultar' : 'Detalhes'}</span>
-                                <span class="toggle-arrow">▾</span>
+                            <button type="button" class="btn-toggle-details" onclick="event.stopPropagation(); openServiceModal('${service.id}')">
+                                <span class="toggle-text">Detalhes</span>
+                                <span class="toggle-arrow">↗</span>
                             </button>
-                        </div>
-
-                        <div class="service-card-details">
-                            <div class="service-meta-grid">
-                                <div class="meta-item">
-                                    <span class="meta-label">Periodicidade</span>
-                                    <span class="meta-value">${service.interval_minutes} min (tol: ${service.grace_minutes}m)</span>
-                                </div>
-                                <div class="meta-item">
-                                    <span class="meta-label">Data Último Ping</span>
-                                    <span class="meta-value">${escapeHtml(service.last_ping_at_formatted)}</span>
-                                </div>
-                                <div class="meta-item">
-                                    <span class="meta-label">IP / Origem</span>
-                                    <span class="meta-value">${escapeHtml(service.last_ip || 'Não detectado')}</span>
-                                </div>
-                            </div>
-
-                            ${service.last_message ? `
-                                <div class="service-alert-banner">
-                                    <span>💬</span>
-                                    <span>${escapeHtml(service.last_message)}</span>
-                                </div>
-                            ` : ''}
-
-                            <div class="service-logs-area">
-                                <div class="logs-heading">
-                                    <span>Últimos Logs Recebidos</span>
-                                    <span>${service.logs ? service.logs.length : 0} log(s)</span>
-                                </div>
-                `;
-
-                if (!service.logs || service.logs.length === 0) {
-                    html += `<div class="empty-logs">Nenhum arquivo de log anexado recentemente.</div>`;
-                } else {
-                    service.logs.forEach(log => {
-                        const b64 = log.log_excerpt ? btoa(unescape(encodeURIComponent(log.log_excerpt))) : '';
-                        html += `
-                            <div class="log-row">
-                                <span class="log-file" title="${escapeHtml(log.filename)}">${escapeHtml(log.filename || 'log.txt')}</span>
-                                <span class="log-date">${escapeHtml(log.received_at_formatted)}</span>
-                                <span class="meta-value" style="font-size: 10px;">${escapeHtml(log.file_size_formatted)}</span>
-                                <div class="log-actions">
-                                    ${log.log_excerpt ? `<button class="btn-log-action" onclick="showLogModal('${escapeHtml(service.name)}', '${escapeHtml(log.filename)}', '${b64}', '${log.download_url}')">Preview</button>` : ''}
-                                    <a href="${log.download_url}" class="btn-log-action" target="_blank" download>Baixar</a>
-                                </div>
-                            </div>
-                        `;
-                    });
-                }
-
-                html += `
-                            </div>
                         </div>
                     </article>
                 `;

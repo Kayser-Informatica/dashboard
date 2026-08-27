@@ -86,7 +86,7 @@ class MonitoredService extends Model
         }
 
         if ($this->is_overdue) {
-            return 'failed';
+            return 'overdue';
         }
 
         return $this->last_status ?? 'ok';

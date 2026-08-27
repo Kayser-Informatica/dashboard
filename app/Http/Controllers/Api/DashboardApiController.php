@@ -11,13 +11,25 @@ class DashboardApiController extends Controller
 {
     public function __invoke(): JsonResponse
     {
+        $statusPriority = fn (string $status) => match ($status) {
+            'failed' => 1,
+            'overdue' => 2,
+            'unknown' => 3,
+            'ok' => 4,
+            default => 5,
+        };
+
         $services = MonitoredService::query()
             ->with([
                 'client',
-                'serviceLogs' => fn ($logQuery) => $logQuery->latest('received_at')->limit(5),
+                'serviceLogs' => fn ($logQuery) => $logQuery->latest('received_at')->limit(10),
             ])
-            ->orderBy('name')
-            ->get();
+            ->get()
+            ->sortBy([
+                fn ($a, $b) => $statusPriority($a->computed_status) <=> $statusPriority($b->computed_status),
+                ['name', 'asc'],
+            ])
+            ->values();
 
         $metrics = [
             'clients_count' => Client::count(),
@@ -59,6 +71,7 @@ class DashboardApiController extends Controller
                 'last_ping_at_formatted' => $service->last_ping_at?->format('d/m/Y H:i:s') ?? 'Nunca',
                 'last_ping_at_human' => $service->last_ping_at?->diffForHumans() ?? 'Nunca',
                 'next_expected_at' => $deadline?->toIso8601String(),
+                'next_expected_at_formatted' => $deadline?->format('d/m/Y H:i:s') ?? 'Sem periodicidade',
                 'next_expected_at_human' => $deadline ? ($service->is_overdue ? 'Atrasado há ' . $deadline->diffForHumans(null, true) : 'Previsto ' . $deadline->diffForHumans()) : 'Sem periodicidade',
                 'logs_count' => $service->serviceLogs->count(),
                 'logs' => $service->serviceLogs->map(function (ServiceLog $log) use ($service) {
@@ -73,9 +86,9 @@ class DashboardApiController extends Controller
                         'received_at' => $log->received_at?->toIso8601String(),
                         'received_at_formatted' => $log->received_at?->format('d/m/Y H:i:s') ?? '-',
                     ];
-                }),
+                })->values(),
             ];
-        });
+        })->values();
 
         return response()->json([
             'metrics' => $metrics,

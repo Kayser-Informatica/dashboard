@@ -11,13 +11,25 @@ class DashboardController extends Controller
 {
     public function __invoke(): View
     {
+        $statusPriority = fn (string $status) => match ($status) {
+            'failed' => 1,
+            'overdue' => 2,
+            'unknown' => 3,
+            'ok' => 4,
+            default => 5,
+        };
+
         $services = MonitoredService::query()
             ->with([
                 'client',
-                'serviceLogs' => fn ($logQuery) => $logQuery->latest('received_at')->limit(5),
+                'serviceLogs' => fn ($logQuery) => $logQuery->latest('received_at')->limit(10),
             ])
-            ->orderBy('name')
-            ->get();
+            ->get()
+            ->sortBy([
+                fn ($a, $b) => $statusPriority($a->computed_status) <=> $statusPriority($b->computed_status),
+                ['name', 'asc'],
+            ])
+            ->values();
 
         $metrics = [
             'clients_count' => Client::count(),
