@@ -116,22 +116,74 @@ Para aplicações desktop, serviços Windows ou servidores desenvolvidos em **De
 
 ## 🚀 Como Executar o Projeto
 
-### Opção A: Executando com Docker Compose (Recomendado)
+Você pode executar o projeto utilizando **Laravel Sail** (recomendado para desenvolvimento), **Docker Standalone** (imagem de produção autocontida) ou **Localmente**.
 
-O projeto já inclui um ambiente pronto com PHP 8.3 e MySQL:
+---
+
+### Opção 1: Laravel Sail (Recomendado para Desenvolvimento)
+
+O Sail fornece um ambiente de desenvolvimento completo e isolado (PHP 8.3, MySQL 8.0, Redis, Mailpit e Node/Vite) sem necessidade de instalar dependências no host:
 
 ```bash
-# 1. Copie o arquivo de ambiente (se necessário)
+# 1. Copie o arquivo de ambiente
 cp .env.example .env
 
-# 2. Inicie os containers
-docker compose up -d
+# 2. Inicie os containers do Sail em segundo plano
+./vendor/bin/sail up -d
+# ou simplesmente 'sail up -d' caso tenha o alias configurado
+
+# 3. Execute as migrações do banco de dados
+./vendor/bin/sail artisan migrate
+
+# 4. (Opcional) Gere a chave da aplicação se ainda não estiver definida
+./vendor/bin/sail artisan key:generate
+
+# 5. Acesse no navegador:
+# Dashboard: http://localhost:8000
+# Mailpit (Webmail de testes): http://localhost:8025
+```
+
+#### Comandos Úteis com o Sail:
+```bash
+# Executar comandos Artisan
+./vendor/bin/sail artisan [comando]
+
+# Executar comandos Composer
+./vendor/bin/sail composer [comando]
+
+# Compilar assets ou iniciar o Vite (hot-reload)
+./vendor/bin/sail npm run dev
+
+# Abrir um terminal bash dentro do container da aplicação
+./vendor/bin/sail bash
+
+# Parar os containers
+./vendor/bin/sail down
+```
+
+---
+
+### Opção 2: Docker Compose Standalone (Build Autocontido / Produção)
+
+Utiliza a imagem de produção em [`docker/Dockerfile`](docker/Dockerfile) com Nginx, PHP-FPM, supervisord e assets compilados via Vite:
+
+```bash
+# 1. Copie o arquivo de ambiente
+cp .env.example .env
+
+# 2. Inicie os containers com o arquivo de produção
+docker compose -f docker-compose.prod.yml up -d --build
 
 # 3. Acesse no navegador:
 # http://localhost:8000
+
+# 4. Para parar os containers:
+docker compose -f docker-compose.prod.yml down
 ```
 
-### Opção B: Executando Localmente (PHP + Composer)
+---
+
+### Opção 3: Executando Localmente (PHP + Composer + MySQL)
 
 ```bash
 cp .env.example .env
@@ -150,10 +202,12 @@ No seu arquivo `.env`:
 
 | Variável | Padrão | Descrição |
 | :--- | :--- | :--- |
+| `APP_PORT` | `8000` | Porta HTTP da aplicação no host (evita conflitos com a porta 80). |
+| `VITE_PORT` | `5174` | Porta do servidor de desenvolvimento Vite. |
 | `DASHBOARD_REFRESH_INTERVAL_SECONDS` | `30` | Intervalo em segundos para atualização reativa automática do painel sem reload. |
 | `APP_TIMEZONE` | `America/Sao_Paulo` | Fuso horário para registro e exibição das datas de execução. |
-| `MAIL_MAILER` | `log` / `smtp` | Driver de envio de e-mails (`smtp`, `ses`, `mailgun`, etc.). |
-| `MAIL_HOST`, `MAIL_PORT`, `MAIL_USERNAME`... | - | Credenciais do servidor SMTP para envio dos alertas de queda/recuperação. |
+| `MAIL_MAILER` | `smtp` / `log` | Driver de envio de e-mails (`smtp`, `ses`, `mailgun`, etc.). |
+| `MAIL_HOST`, `MAIL_PORT` | `mailpit` / `1025` | Configurações do Mailpit local no Sail ou servidor SMTP externo. |
 
 ---
 
@@ -174,11 +228,17 @@ O repositório inclui o arquivo [`compose.coolify.yaml`](compose.coolify.yaml) p
 
 ## 🧪 Testes Automatizados
 
-Para rodar os testes da aplicação:
+Para rodar os testes automatizados da aplicação:
 
 ```bash
-docker compose exec app php artisan test
-# ou localmente:
+# Com Laravel Sail (Recomendado):
+./vendor/bin/sail test
+# ou:
+./vendor/bin/sail artisan test
+
+# Com Docker Compose Standalone:
+docker compose -f docker-compose.prod.yml exec app php artisan test
+
+# Localmente:
 php artisan test
 ```
-

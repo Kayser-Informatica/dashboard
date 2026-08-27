@@ -283,7 +283,7 @@ class MonitoredServicesTest extends TestCase
             ->assertJsonPath('metrics.clients_count', 1)
             ->assertJsonPath('metrics.total', 1)
             ->assertJsonPath('metrics.online', 1)
-            ->assertJsonPath('clients.0.name', 'NeeMedT')
-            ->assertJsonPath('clients.0.services.0.name', 'Envio de emails do financeiro');
+            ->assertJsonPath('services.0.client_name', 'NeeMedT')
+            ->assertJsonPath('services.0.name', 'Envio de emails do financeiro');
     }
 }
