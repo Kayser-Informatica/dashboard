@@ -105,9 +105,18 @@ php artisan monitors:check-deadlines
 
 ---
 
+## 🔌 Integração Delphi (`delphi_class`)
+
+Para aplicações desktop, serviços Windows ou servidores desenvolvidos em **Delphi** (10.1 Berlin ou superior), está disponível uma unit pronta e desacoplada para envio de heartbeat e arquivos de log:
+
+* **Classe Delphi:** [`delphi_class/uHeartbeatMonitor.pas`](delphi_class/uHeartbeatMonitor.pas) — Classe `THeartbeatMonitor` nativa (`System.Net.HttpClient`), não-bloqueante (threads assíncronas), com suporte a timer periódico, disparo sob demanda e anexo de arquivos de log (`multipart/form-data`).
+* **Documentação & Exemplos:** Consulte o guia detalhado em [`delphi_class/README_HeartbeatMonitor.md`](delphi_class/README_HeartbeatMonitor.md) com exemplos práticos para VCL, Horse e serviços Console/Windows.
+
+---
+
 ## 📁 Coleção Insomnia
 
-O arquivo [insomnia.json](file:///home/lucas/web_projects/dashboard/insomnia.json) na raiz do projeto contém todas as requisições prontas e organizadas por pastas:
+O arquivo [`insomnia.json`](insomnia.json) na raiz do projeto contém todas as requisições prontas e organizadas por pastas:
 * **1. Clientes:** Cadastro e emissão de token.
 * **2. Heartbeat & Serviços:** JSON Sucesso, JSON Falha e Multipart com upload de arquivo.
 * **3. Dashboard & Métricas:** Polling de métricas.
