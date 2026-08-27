@@ -12,6 +12,8 @@ class HealthcheckController extends Controller
 {
     public function __invoke(Request $request): JsonResponse
     {
+        $this->normalizeRequestInput($request);
+
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:120'],
             'slug' => ['nullable', 'string', 'max:140', 'regex:/^[a-z0-9]+(?:-[a-z0-9]+)*$/'],
@@ -20,6 +22,16 @@ class HealthcheckController extends Controller
             'message' => ['nullable', 'string', 'max:1000'],
             'ip' => ['nullable', 'ip'],
             'external_ip' => ['nullable', 'ip'],
+        ], [
+            'name.required' => 'O nome do sistema (name) é obrigatório.',
+            'name.string' => 'O nome do sistema deve ser um texto.',
+            'name.max' => 'O nome do sistema não pode ultrapassar 120 caracteres.',
+            'slug.regex' => 'O slug informado possui formato inválido. Use apenas letras minúsculas, números e hífens.',
+            'ok.boolean' => 'O campo ok deve ser um valor booleano válido (true/false, 1/0, "ok", "sim", "não").',
+            'status.in' => 'O status informado é inválido. Valores aceitos: ok, failed, unknown.',
+            'message.max' => 'A mensagem não pode ultrapassar 1000 caracteres.',
+            'ip.ip' => 'O endereço IP informado não é válido.',
+            'external_ip.ip' => 'O endereço external_ip informado não é válido.',
         ]);
 
         $slug = $validated['slug'] ?? Str::slug($validated['name']);
@@ -94,6 +106,21 @@ class HealthcheckController extends Controller
         return response()->json([
             'data' => $systems,
         ]);
+    }
+
+    private function normalizeRequestInput(Request $request): void
+    {
+        if ($request->has('ok')) {
+            $rawOk = $request->input('ok');
+            if (is_string($rawOk)) {
+                $trimmed = strtolower(trim($rawOk));
+                if (in_array($trimmed, ['1', 'true', 'ok', 'yes', 'sim', 't', 's', 'success', 'sucesso'], true)) {
+                    $request->merge(['ok' => true]);
+                } elseif (in_array($trimmed, ['0', 'false', 'fail', 'failed', 'no', 'nao', 'não', 'f', 'n', 'erro', 'error'], true)) {
+                    $request->merge(['ok' => false]);
+                }
+            }
+        }
     }
 
     private function resolveClientIp(Request $request): ?string

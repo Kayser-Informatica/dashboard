@@ -18,6 +18,12 @@ class BackupLogController extends Controller
             'system' => ['required', 'string', 'max:140'],
             'status' => ['nullable', 'in:success,failed,warning,received'],
             'log_file' => ['required', 'file', 'max:10240'],
+        ], [
+            'system.required' => 'O identificador do sistema (system) é obrigatório.',
+            'status.in' => 'O status informado é inválido. Valores aceitos: success, failed, warning, received.',
+            'log_file.required' => 'O anexo do arquivo de log (log_file) é obrigatório.',
+            'log_file.file' => 'O anexo log_file deve ser um arquivo válido.',
+            'log_file.max' => 'O arquivo de log não pode ultrapassar 10MB.',
         ]);
 
         $system = System::query()

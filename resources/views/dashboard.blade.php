@@ -451,12 +451,12 @@
 
         .client-services-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(480px, 1fr));
-            gap: 16px;
-            padding: 20px;
+            grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+            gap: 14px;
+            padding: 18px 20px 22px;
         }
 
-        /* Service Card */
+        /* Service Card - Compacto & Resumido */
         .service-card {
             background: var(--bg-surface-elevated);
             border: 1px solid var(--line);
@@ -464,11 +464,14 @@
             overflow: hidden;
             display: flex;
             flex-direction: column;
-            transition: all 0.25s ease;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+            position: relative;
         }
 
         .service-card:hover {
-            border-color: var(--line-light);
+            border-color: rgba(56, 189, 248, 0.4);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px -4px rgba(0, 0, 0, 0.4);
         }
 
         /* Highlighting for failed / alert cards */
@@ -476,9 +479,13 @@
         .service-card.service-card--failed {
             border: 1.5px solid rgba(244, 63, 94, 0.7);
             border-left: 5px solid #f43f5e;
-            background: linear-gradient(180deg, rgba(244, 63, 94, 0.16) 0%, rgba(20, 10, 15, 0.95) 100%) !important;
+            background: linear-gradient(180deg, rgba(244, 63, 94, 0.14) 0%, rgba(20, 10, 15, 0.98) 100%) !important;
             box-shadow: 0 0 24px -2px rgba(244, 63, 94, 0.28), 0 8px 24px rgba(0, 0, 0, 0.5);
             animation: card-alert-pulse 3s infinite ease-in-out;
+        }
+
+        .service-card[data-status="overdue"] {
+            border-left: 5px solid #f59e0b;
         }
 
         .service-card[data-status="failed"] .service-card-head,
@@ -491,26 +498,6 @@
         .service-card.service-card--failed .service-name {
             color: #ffe4e6;
             text-shadow: 0 0 10px rgba(244, 63, 94, 0.4);
-        }
-
-        .service-card[data-status="failed"] .service-meta-grid,
-        .service-card.service-card--failed .service-meta-grid {
-            background: rgba(0, 0, 0, 0.3);
-            border-bottom: 1px solid rgba(244, 63, 94, 0.25);
-        }
-
-        .service-card[data-status="failed"] .service-alert-banner,
-        .service-card.service-card--failed .service-alert-banner {
-            background: rgba(244, 63, 94, 0.28);
-            border-bottom: 1px solid rgba(244, 63, 94, 0.4);
-            color: #fff1f2;
-            font-weight: 600;
-        }
-
-        .service-card[data-status="failed"] .log-row,
-        .service-card.service-card--failed .log-row {
-            background: rgba(0, 0, 0, 0.2);
-            border-color: rgba(244, 63, 94, 0.2);
         }
 
         @keyframes card-alert-pulse {
@@ -528,14 +515,22 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 14px 18px;
+            padding: 12px 14px;
             background: var(--bg-meta);
             border-bottom: 1px solid var(--line);
-            gap: 12px;
+            gap: 10px;
+        }
+
+        .service-title-wrap {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            min-width: 0;
+            flex: 1;
         }
 
         .service-name {
-            font-size: 15px;
+            font-size: 14px;
             font-weight: 700;
             color: #ffffff;
             margin: 0;
@@ -549,9 +544,9 @@
             display: inline-flex;
             align-items: center;
             gap: 6px;
-            padding: 5px 12px;
+            padding: 4px 10px;
             border-radius: 999px;
-            font-size: 11px;
+            font-size: 10px;
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 0.05em;
@@ -597,13 +592,154 @@
             50% { box-shadow: 0 0 0 4px rgba(244, 63, 94, 0); }
         }
 
-        /* Meta Grid */
+        /* Quick Meta Summary */
+        .service-quick-meta {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            padding: 10px 14px;
+            background: rgba(0, 0, 0, 0.15);
+        }
+
+        .quick-meta-item {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            min-width: 0;
+        }
+
+        .quick-meta-label {
+            font-size: 10px;
+            font-weight: 700;
+            color: var(--ink-subtle);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .quick-meta-val {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--ink);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .quick-meta-val.highlight {
+            color: #38bdf8;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .quick-meta-val.alert {
+            color: #f87171;
+            font-weight: 700;
+        }
+
+        /* Mini Alert Preview */
+        .service-mini-alert {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 14px;
+            background: rgba(244, 63, 94, 0.15);
+            border-top: 1px solid rgba(244, 63, 94, 0.22);
+            border-bottom: 1px solid rgba(244, 63, 94, 0.22);
+            color: #fca5a5;
+            font-size: 11px;
+            font-weight: 500;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .mini-alert-text {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        /* Card Foot & Details Button */
+        .service-card-foot {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 14px;
+            background: var(--bg-card-head);
+            border-top: 1px solid var(--line);
+            margin-top: auto;
+        }
+
+        .service-summary-tag {
+            font-size: 11px;
+            color: var(--ink-muted);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 500;
+        }
+
+        .btn-toggle-details {
+            background: var(--bg-surface);
+            border: 1px solid var(--line);
+            color: var(--ink-muted);
+            border-radius: var(--radius-sm);
+            padding: 4px 10px;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-toggle-details:hover {
+            background: rgba(14, 165, 233, 0.15);
+            border-color: rgba(56, 189, 248, 0.4);
+            color: #38bdf8;
+        }
+
+        .toggle-arrow {
+            font-size: 10px;
+            transition: transform 0.25s ease;
+            display: inline-block;
+        }
+
+        /* Collapsible Details Area */
+        .service-card-details {
+            display: none;
+            border-top: 1px solid var(--line);
+            background: rgba(0, 0, 0, 0.25);
+            animation: fadeIn 0.2s ease;
+        }
+
+        .service-card.is-expanded .service-card-details {
+            display: block;
+        }
+
+        .service-card.is-expanded .btn-toggle-details {
+            background: rgba(14, 165, 233, 0.15);
+            border-color: rgba(56, 189, 248, 0.4);
+            color: #38bdf8;
+        }
+
+        .service-card.is-expanded .toggle-arrow {
+            transform: rotate(180deg);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-4px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Meta Grid inside Details */
         .service-meta-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 10px;
-            padding: 12px 18px;
-            background: rgba(0, 0, 0, 0.15);
+            padding: 12px 14px;
+            background: rgba(0, 0, 0, 0.2);
             border-bottom: 1px solid var(--line);
         }
 
@@ -640,21 +776,22 @@
             font-weight: 700;
         }
 
-        /* Alert Banner */
+        /* Alert Banner inside Details */
         .service-alert-banner {
-            padding: 8px 18px;
+            padding: 8px 14px;
             font-size: 11px;
             background: rgba(244, 63, 94, 0.12);
             border-bottom: 1px solid rgba(244, 63, 94, 0.25);
             color: #fca5a5;
             display: flex;
-            align-items: center;
+            align-items: flex-start;
             gap: 8px;
+            line-height: 1.4;
         }
 
         /* Logs Area */
         .service-logs-area {
-            padding: 12px 18px 16px;
+            padding: 12px 14px 14px;
             display: flex;
             flex-direction: column;
             gap: 8px;
@@ -675,7 +812,7 @@
             display: grid;
             grid-template-columns: 1fr auto auto auto;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
             padding: 6px 10px;
             background: var(--bg-meta);
             border: 1px solid var(--line);
@@ -729,6 +866,28 @@
             background: var(--bg-meta);
             border: 1px dashed var(--line);
             border-radius: var(--radius-sm);
+        }
+
+        .view-toggle-btn {
+            background: var(--bg-meta);
+            border: 1px solid var(--line);
+            color: var(--ink-muted);
+            font-size: 12px;
+            font-weight: 600;
+            padding: 6px 14px;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+
+        .view-toggle-btn:hover {
+            color: #38bdf8;
+            border-color: rgba(56, 189, 248, 0.4);
+            background: rgba(14, 165, 233, 0.1);
         }
 
         /* Modal Log Viewer */
@@ -942,6 +1101,12 @@
                 <button class="filter-btn" data-filter="alerts" onclick="setFilter('alerts')">🔴 Com Alertas</button>
                 <button class="filter-btn" data-filter="ok" onclick="setFilter('ok')">🟢 Saudáveis</button>
             </div>
+            <div class="filter-actions">
+                <button type="button" class="view-toggle-btn" id="btn-toggle-all" onclick="toggleAllDetails()">
+                    <span id="toggle-all-icon">⊞</span>
+                    <span id="toggle-all-text">Expandir Todos</span>
+                </button>
+            </div>
         </div>
 
         <!-- Clients & Services Area -->
@@ -979,61 +1144,96 @@
                                 };
                             @endphp
 
-                            <article class="service-card {{ $status === 'failed' ? 'service-card--failed' : '' }}" data-service-name="{{ strtolower($service->name) }}" data-status="{{ $status }}">
+                            <article class="service-card {{ $status === 'failed' ? 'service-card--failed' : '' }}" data-service-id="{{ $service->id }}" data-service-name="{{ strtolower($service->name) }}" data-status="{{ $status }}">
                                 <div class="service-card-head">
-                                    <h3 class="service-name" title="{{ $service->name }}">{{ $service->name }}</h3>
+                                    <div class="service-title-wrap">
+                                        <h3 class="service-name" title="{{ $service->name }}">{{ $service->name }}</h3>
+                                    </div>
                                     <span class="status-chip {{ $statusClass }}">{{ $statusLabel }}</span>
                                 </div>
 
-                                <div class="service-meta-grid">
-                                    <div class="meta-item">
-                                        <span class="meta-label">Periodicidade</span>
-                                        <span class="meta-value">{{ $service->expected_interval_minutes }} min (tol: {{ $service->grace_period_minutes }}m)</span>
+                                <div class="service-quick-meta">
+                                    <div class="quick-meta-item">
+                                        <span class="quick-meta-label">Último Ping</span>
+                                        <span class="quick-meta-val">{{ $service->last_ping_at ? $service->last_ping_at->diffForHumans() : 'Nunca' }}</span>
                                     </div>
-                                    <div class="meta-item">
-                                        <span class="meta-label">Último Ping</span>
-                                        <span class="meta-value">{{ $service->last_ping_at ? $service->last_ping_at->format('d/m/Y H:i:s') . ' (' . $service->last_ping_at->diffForHumans() . ')' : 'Nunca' }}</span>
-                                    </div>
-                                    <div class="meta-item">
-                                        <span class="meta-label">Previsão / Prazo</span>
+                                    <div class="quick-meta-item">
+                                        <span class="quick-meta-label">Previsão / Prazo</span>
                                         @if($service->is_overdue)
-                                            <span class="meta-value meta-value--alert">Atrasado há {{ $service->next_expected_at?->diffForHumans(null, true) }}</span>
+                                            <span class="quick-meta-val alert">Atrasado há {{ $service->next_expected_at?->diffForHumans(null, true) }}</span>
                                         @elseif($service->next_expected_at)
-                                            <span class="meta-value meta-value--highlight">{{ $service->next_expected_at->diffForHumans() }}</span>
+                                            <span class="quick-meta-val highlight">{{ $service->next_expected_at->diffForHumans() }}</span>
                                         @else
-                                            <span class="meta-value">-</span>
+                                            <span class="quick-meta-val">-</span>
                                         @endif
                                     </div>
                                 </div>
 
                                 @if($service->last_message || $status === 'failed' || $status === 'overdue')
-                                    <div class="service-alert-banner">
+                                    <div class="service-mini-alert" title="{{ $service->last_message ?: ($service->is_overdue ? 'Tempo de tolerância ultrapassado! Sem sinal de vida no intervalo previsto.' : 'Falha reportada pelo script.') }}">
                                         <span>⚠️</span>
-                                        <span>{{ $service->last_message ?: ($service->is_overdue ? 'Tempo de tolerância ultrapassado! Sem sinal de vida no intervalo previsto.' : 'Falha reportada pelo script.') }}</span>
+                                        <span class="mini-alert-text">{{ $service->last_message ?: ($service->is_overdue ? 'Tempo de tolerância ultrapassado!' : 'Falha reportada pelo script.') }}</span>
                                     </div>
                                 @endif
 
-                                <div class="service-logs-area">
-                                    <div class="logs-heading">
-                                        <span>Últimos Logs Recebidos</span>
-                                        <span>{{ $service->serviceLogs->count() }} log(s)</span>
+                                <div class="service-card-foot">
+                                    <div class="service-summary-tag">
+                                        <span>🔄 {{ $service->expected_interval_minutes }}m</span>
+                                        @if($service->serviceLogs->count() > 0)
+                                            <span>• 📄 {{ $service->serviceLogs->count() }} log(s)</span>
+                                        @endif
+                                    </div>
+                                    <button type="button" class="btn-toggle-details" onclick="toggleServiceDetails(this, '{{ $service->id }}')">
+                                        <span class="toggle-text">Detalhes</span>
+                                        <span class="toggle-arrow">▾</span>
+                                    </button>
+                                </div>
+
+                                <div class="service-card-details">
+                                    <div class="service-meta-grid">
+                                        <div class="meta-item">
+                                            <span class="meta-label">Periodicidade</span>
+                                            <span class="meta-value">{{ $service->expected_interval_minutes }} min (tol: {{ $service->grace_period_minutes }}m)</span>
+                                        </div>
+                                        <div class="meta-item">
+                                            <span class="meta-label">Data Último Ping</span>
+                                            <span class="meta-value">{{ $service->last_ping_at ? $service->last_ping_at->format('d/m/Y H:i:s') : 'Nunca' }}</span>
+                                        </div>
+                                        <div class="meta-item">
+                                            <span class="meta-label">IP / Origem</span>
+                                            <span class="meta-value">{{ $service->last_ip ?? 'Não detectado' }}</span>
+                                        </div>
                                     </div>
 
-                                    @forelse($service->serviceLogs as $log)
-                                        <div class="log-row">
-                                            <span class="log-file" title="{{ $log->original_filename }}">{{ $log->original_filename ?: 'log.txt' }}</span>
-                                            <span class="log-date">{{ $log->received_at->format('d/m H:i') }}</span>
-                                            <span class="meta-value" style="font-size: 10px;">{{ number_format($log->file_size / 1024, 1) }} KB</span>
-                                            <div class="log-actions">
-                                                @if($log->log_excerpt)
-                                                    <button class="btn-log-action" onclick="showLogModal('{{ addslashes($service->name) }}', '{{ addslashes($log->original_filename) }}', '{{ base64_encode($log->log_excerpt) }}', '{{ route('api.services.logs.download', ['service' => $service->id, 'log' => $log->id]) }}')">Preview</button>
-                                                @endif
-                                                <a href="{{ route('api.services.logs.download', ['service' => $service->id, 'log' => $log->id]) }}" class="btn-log-action" target="_blank" download>Baixar</a>
-                                            </div>
+                                    @if($service->last_message)
+                                        <div class="service-alert-banner">
+                                            <span>💬</span>
+                                            <span>{{ $service->last_message }}</span>
                                         </div>
-                                    @empty
-                                        <div class="empty-logs">Nenhum arquivo de log anexado recentemente.</div>
-                                    @endforelse
+                                    @endif
+
+                                    <div class="service-logs-area">
+                                        <div class="logs-heading">
+                                            <span>Últimos Logs Recebidos</span>
+                                            <span>{{ $service->serviceLogs->count() }} log(s)</span>
+                                        </div>
+
+                                        @forelse($service->serviceLogs as $log)
+                                            <div class="log-row">
+                                                <span class="log-file" title="{{ $log->original_filename }}">{{ $log->original_filename ?: 'log.txt' }}</span>
+                                                <span class="log-date">{{ $log->received_at->format('d/m H:i') }}</span>
+                                                <span class="meta-value" style="font-size: 10px;">{{ number_format($log->file_size / 1024, 1) }} KB</span>
+                                                <div class="log-actions">
+                                                    @if($log->log_excerpt)
+                                                        <button class="btn-log-action" onclick="showLogModal('{{ addslashes($service->name) }}', '{{ addslashes($log->original_filename) }}', '{{ base64_encode($log->log_excerpt) }}', '{{ route('api.services.logs.download', ['service' => $service->id, 'log' => $log->id]) }}')">Preview</button>
+                                                    @endif
+                                                    <a href="{{ route('api.services.logs.download', ['service' => $service->id, 'log' => $log->id]) }}" class="btn-log-action" target="_blank" download>Baixar</a>
+                                                </div>
+                                            </div>
+                                        @empty
+                                            <div class="empty-logs">Nenhum arquivo de log anexado recentemente.</div>
+                                        @endforelse
+                                    </div>
                                 </div>
                             </article>
                         @empty
@@ -1069,6 +1269,8 @@
 
     <script>
         let currentFilter = 'all';
+        const expandedServiceIds = new Set();
+        let allExpanded = false;
 
         function updateClock() {
             const now = new Date();
@@ -1123,6 +1325,48 @@
 
                 section.style.display = visibleServicesInClient > 0 ? 'block' : 'none';
             });
+        }
+
+        function toggleServiceDetails(btn, serviceId) {
+            const card = btn.closest('.service-card');
+            if (!card) return;
+
+            const isExpanded = card.classList.toggle('is-expanded');
+            const textSpan = btn.querySelector('.toggle-text');
+
+            if (isExpanded) {
+                expandedServiceIds.add(String(serviceId));
+                if (textSpan) textSpan.textContent = 'Ocultar';
+            } else {
+                expandedServiceIds.delete(String(serviceId));
+                if (textSpan) textSpan.textContent = 'Detalhes';
+            }
+        }
+
+        function toggleAllDetails() {
+            allExpanded = !allExpanded;
+            const cards = document.querySelectorAll('.service-card');
+            const textElem = document.getElementById('toggle-all-text');
+            const iconElem = document.getElementById('toggle-all-icon');
+
+            cards.forEach(card => {
+                const serviceId = card.dataset.serviceId;
+                const toggleBtn = card.querySelector('.btn-toggle-details');
+                const textSpan = toggleBtn ? toggleBtn.querySelector('.toggle-text') : null;
+
+                if (allExpanded) {
+                    card.classList.add('is-expanded');
+                    if (serviceId) expandedServiceIds.add(String(serviceId));
+                    if (textSpan) textSpan.textContent = 'Ocultar';
+                } else {
+                    card.classList.remove('is-expanded');
+                    if (serviceId) expandedServiceIds.delete(String(serviceId));
+                    if (textSpan) textSpan.textContent = 'Detalhes';
+                }
+            });
+
+            if (textElem) textElem.textContent = allExpanded ? 'Recolher Todos' : 'Expandir Todos';
+            if (iconElem) iconElem.textContent = allExpanded ? '⊟' : '⊞';
         }
 
         function showLogModal(serviceName, filename, b64Content, downloadUrl) {
@@ -1192,42 +1436,75 @@
                         const statusClass = status === 'ok' ? 'status--ok' : (status === 'failed' ? 'status--failed' : (status === 'overdue' ? 'status--overdue' : 'status--unknown'));
                         const statusLabel = service.status_label || (status === 'ok' ? 'Operacional' : (status === 'failed' ? 'Falha' : (status === 'overdue' ? 'Atrasado' : 'Aguardando')));
                         const isAlert = service.last_message || status === 'failed' || status === 'overdue';
-                        const defaultAlertMsg = service.is_overdue ? 'Tempo de tolerância ultrapassado! Sem sinal de vida no intervalo previsto.' : 'Falha reportada pelo script.';
+                        const defaultAlertMsg = service.is_overdue ? 'Tempo de tolerância ultrapassado!' : 'Falha reportada pelo script.';
+                        const isExpanded = expandedServiceIds.has(String(service.id));
 
                         html += `
-                            <article class="service-card ${status === 'failed' ? 'service-card--failed' : ''}" data-service-name="${escapeHtml((service.name || '').toLowerCase())}" data-status="${status}">
+                            <article class="service-card ${status === 'failed' ? 'service-card--failed' : ''} ${isExpanded ? 'is-expanded' : ''}" data-service-id="${service.id}" data-service-name="${escapeHtml((service.name || '').toLowerCase())}" data-status="${status}">
                                 <div class="service-card-head">
-                                    <h3 class="service-name" title="${escapeHtml(service.name)}">${escapeHtml(service.name)}</h3>
+                                    <div class="service-title-wrap">
+                                        <h3 class="service-name" title="${escapeHtml(service.name)}">${escapeHtml(service.name)}</h3>
+                                    </div>
                                     <span class="status-chip ${statusClass}">${statusLabel}</span>
                                 </div>
 
-                                <div class="service-meta-grid">
-                                    <div class="meta-item">
-                                        <span class="meta-label">Periodicidade</span>
-                                        <span class="meta-value">${service.interval_minutes} min (tol: ${service.grace_minutes}m)</span>
+                                <div class="service-quick-meta">
+                                    <div class="quick-meta-item">
+                                        <span class="quick-meta-label">Último Ping</span>
+                                        <span class="quick-meta-val">${escapeHtml(service.last_ping_at_human)}</span>
                                     </div>
-                                    <div class="meta-item">
-                                        <span class="meta-label">Último Ping</span>
-                                        <span class="meta-value">${escapeHtml(service.last_ping_at_formatted && service.last_ping_at_formatted !== 'Nunca' ? service.last_ping_at_formatted + ' (' + service.last_ping_at_human + ')' : 'Nunca')}</span>
-                                    </div>
-                                    <div class="meta-item">
-                                        <span class="meta-label">Previsão / Prazo</span>
-                                        ${service.is_overdue ? `<span class="meta-value meta-value--alert">${escapeHtml(service.next_expected_at_human)}</span>` : `<span class="meta-value meta-value--highlight">${escapeHtml(service.next_expected_at_human)}</span>`}
+                                    <div class="quick-meta-item">
+                                        <span class="quick-meta-label">Previsão / Prazo</span>
+                                        <span class="quick-meta-val ${service.is_overdue ? 'alert' : 'highlight'}">${escapeHtml(service.next_expected_at_human)}</span>
                                     </div>
                                 </div>
 
                                 ${isAlert ? `
-                                    <div class="service-alert-banner">
+                                    <div class="service-mini-alert" title="${escapeHtml(service.last_message || defaultAlertMsg)}">
                                         <span>⚠️</span>
-                                        <span>${escapeHtml(service.last_message || defaultAlertMsg)}</span>
+                                        <span class="mini-alert-text">${escapeHtml(service.last_message || defaultAlertMsg)}</span>
                                     </div>
                                 ` : ''}
 
-                                <div class="service-logs-area">
-                                    <div class="logs-heading">
-                                        <span>Últimos Logs Recebidos</span>
-                                        <span>${service.logs ? service.logs.length : 0} log(s)</span>
+                                <div class="service-card-foot">
+                                    <div class="service-summary-tag">
+                                        <span>🔄 ${service.interval_minutes}m</span>
+                                        ${service.logs && service.logs.length > 0 ? `<span>• 📄 ${service.logs.length} log(s)</span>` : ''}
                                     </div>
+                                    <button type="button" class="btn-toggle-details" onclick="toggleServiceDetails(this, '${service.id}')">
+                                        <span class="toggle-text">${isExpanded ? 'Ocultar' : 'Detalhes'}</span>
+                                        <span class="toggle-arrow">▾</span>
+                                    </button>
+                                </div>
+
+                                <div class="service-card-details">
+                                    <div class="service-meta-grid">
+                                        <div class="meta-item">
+                                            <span class="meta-label">Periodicidade</span>
+                                            <span class="meta-value">${service.interval_minutes} min (tol: ${service.grace_minutes}m)</span>
+                                        </div>
+                                        <div class="meta-item">
+                                            <span class="meta-label">Data Último Ping</span>
+                                            <span class="meta-value">${escapeHtml(service.last_ping_at_formatted)}</span>
+                                        </div>
+                                        <div class="meta-item">
+                                            <span class="meta-label">IP / Origem</span>
+                                            <span class="meta-value">${escapeHtml(service.last_ip || 'Não detectado')}</span>
+                                        </div>
+                                    </div>
+
+                                    ${service.last_message ? `
+                                        <div class="service-alert-banner">
+                                            <span>💬</span>
+                                            <span>${escapeHtml(service.last_message)}</span>
+                                        </div>
+                                    ` : ''}
+
+                                    <div class="service-logs-area">
+                                        <div class="logs-heading">
+                                            <span>Últimos Logs Recebidos</span>
+                                            <span>${service.logs ? service.logs.length : 0} log(s)</span>
+                                        </div>
                         `;
 
                         if (!service.logs || service.logs.length === 0) {
@@ -1250,6 +1527,7 @@
                         }
 
                         html += `
+                                    </div>
                                 </div>
                             </article>
                         `;

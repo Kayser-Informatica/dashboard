@@ -22,6 +22,8 @@ class HeartbeatController extends Controller
         /** @var Client $client */
         $client = $request->attributes->get('client');
 
+        $this->normalizeRequestInput($request);
+
         $validated = $request->validate([
             'service' => ['required', 'string', 'max:120'],
             'slug' => ['nullable', 'string', 'max:140', 'regex:/^[a-z0-9]+(?:-[a-z0-9]+)*$/'],
@@ -33,6 +35,21 @@ class HeartbeatController extends Controller
             'message' => ['nullable', 'string', 'max:2000'],
             'duration_seconds' => ['nullable', 'integer', 'min:0'],
             'log_file' => ['nullable', 'file', 'max:10240'], // 10MB
+        ], [
+            'service.required' => 'O campo service (nome do serviço) é obrigatório.',
+            'service.string' => 'O nome do serviço deve ser um texto.',
+            'service.max' => 'O nome do serviço não pode ultrapassar 120 caracteres.',
+            'slug.regex' => 'O slug informado possui formato inválido. Use apenas letras minúsculas, números e hífens.',
+            'interval_minutes.integer' => 'O intervalo esperado (interval_minutes) deve ser um número inteiro em minutos.',
+            'interval_minutes.min' => 'O intervalo mínimo permitido é de 1 minuto.',
+            'grace_minutes.integer' => 'O tempo de tolerância (grace_minutes) deve ser um número inteiro em minutos.',
+            'ok.boolean' => 'O campo ok deve ser um valor booleano válido (true/false, 1/0, "ok", "sim", "não").',
+            'status.in' => 'O status informado é inválido. Valores aceitos: ok, failed, warning, received.',
+            'message.max' => 'A mensagem não pode ultrapassar 2000 caracteres.',
+            'duration_seconds.integer' => 'A duração em segundos deve ser um número inteiro.',
+            'duration_seconds.min' => 'A duração em segundos não pode ser negativa.',
+            'log_file.file' => 'O anexo log_file deve ser um arquivo válido.',
+            'log_file.max' => 'O arquivo de log não pode ultrapassar 10MB.',
         ]);
 
         $serviceSlug = $validated['slug'] ?? Str::slug($validated['service']);
@@ -162,6 +179,21 @@ class HeartbeatController extends Controller
                 'has_log_attached' => $serviceLog !== null,
             ],
         ]);
+    }
+
+    private function normalizeRequestInput(Request $request): void
+    {
+        if ($request->has('ok')) {
+            $rawOk = $request->input('ok');
+            if (is_string($rawOk)) {
+                $trimmed = strtolower(trim($rawOk));
+                if (in_array($trimmed, ['1', 'true', 'ok', 'yes', 'sim', 't', 's', 'success', 'sucesso'], true)) {
+                    $request->merge(['ok' => true]);
+                } elseif (in_array($trimmed, ['0', 'false', 'fail', 'failed', 'no', 'nao', 'não', 'f', 'n', 'erro', 'error'], true)) {
+                    $request->merge(['ok' => false]);
+                }
+            }
+        }
     }
 
     private function resolveClientIp(Request $request): ?string

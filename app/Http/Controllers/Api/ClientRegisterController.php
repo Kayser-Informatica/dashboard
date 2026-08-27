@@ -15,6 +15,11 @@ class ClientRegisterController extends Controller
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:120'],
             'slug' => ['nullable', 'string', 'max:140', 'regex:/^[a-z0-9]+(?:-[a-z0-9]+)*$/'],
+        ], [
+            'name.required' => 'O nome do cliente (name) é obrigatório.',
+            'name.string' => 'O nome do cliente deve ser um texto.',
+            'name.max' => 'O nome do cliente não pode ultrapassar 120 caracteres.',
+            'slug.regex' => 'O slug informado possui formato inválido. Use apenas letras minúsculas, números e hífens.',
         ]);
 
         $slug = $validated['slug'] ?? Str::slug($validated['name']);
