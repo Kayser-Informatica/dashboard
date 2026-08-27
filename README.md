@@ -114,6 +114,49 @@ Para aplicações desktop, serviços Windows ou servidores desenvolvidos em **De
 
 ---
 
+## 🚀 Como Executar o Projeto
+
+### Opção A: Executando com Docker Compose (Recomendado)
+
+O projeto já inclui um ambiente pronto com PHP 8.3 e MySQL:
+
+```bash
+# 1. Copie o arquivo de ambiente (se necessário)
+cp .env.example .env
+
+# 2. Inicie os containers
+docker compose up -d
+
+# 3. Acesse no navegador:
+# http://localhost:8000
+```
+
+### Opção B: Executando Localmente (PHP + Composer)
+
+```bash
+cp .env.example .env
+composer install
+php artisan key:generate
+php artisan migrate
+npm install && npm run build
+php artisan serve
+```
+
+---
+
+## ⚙️ Variáveis de Ambiente Importantes
+
+No seu arquivo `.env`:
+
+| Variável | Padrão | Descrição |
+| :--- | :--- | :--- |
+| `DASHBOARD_REFRESH_INTERVAL_SECONDS` | `30` | Intervalo em segundos para atualização reativa automática do painel sem reload. |
+| `APP_TIMEZONE` | `America/Sao_Paulo` | Fuso horário para registro e exibição das datas de execução. |
+| `MAIL_MAILER` | `log` / `smtp` | Driver de envio de e-mails (`smtp`, `ses`, `mailgun`, etc.). |
+| `MAIL_HOST`, `MAIL_PORT`, `MAIL_USERNAME`... | - | Credenciais do servidor SMTP para envio dos alertas de queda/recuperação. |
+
+---
+
 ## 📁 Coleção Insomnia
 
 O arquivo [`insomnia.json`](insomnia.json) na raiz do projeto contém todas as requisições prontas e organizadas por pastas:
@@ -123,8 +166,19 @@ O arquivo [`insomnia.json`](insomnia.json) na raiz do projeto contém todas as r
 
 ---
 
+## 🚢 Deploy (Coolify / Docker)
+
+O repositório inclui o arquivo [`compose.coolify.yaml`](compose.coolify.yaml) pronto para implantação automatizada em instâncias **Coolify** ou qualquer servidor Docker com suporte a `compose`.
+
+---
+
 ## 🧪 Testes Automatizados
 
+Para rodar os testes da aplicação:
+
 ```bash
+docker compose exec app php artisan test
+# ou localmente:
 php artisan test
 ```
+
