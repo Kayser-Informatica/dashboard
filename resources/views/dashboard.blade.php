@@ -961,7 +961,7 @@
             </div>
 
             <div class="header-actions">
-                <div class="countdown-widget" id="countdown-widget" title="Tempo restante até a próxima atualização automática">
+                <div class="countdown-widget" id="countdown-widget" title="Clique para atualizar agora ou aguarde o ciclo automático" onclick="manualRefresh()" style="cursor: pointer;">
                     <span class="countdown-icon" id="countdown-icon">↻</span>
                     <span class="countdown-label">Refresh em</span>
                     <span class="countdown-seconds" id="countdown-seconds">{{ $refreshInterval ?? 30 }}s</span>
@@ -1439,14 +1439,31 @@
 
             try {
                 const res = await fetch('/api/dashboard/metrics');
-                if (!res.ok) return;
+                if (!res.ok) {
+                    console.error('Falha na resposta da API:', res.status, res.statusText);
+                    const statusBadgeText = document.getElementById('connection-status-text');
+                    if (statusBadgeText) statusBadgeText.textContent = 'Erro ao atualizar';
+                    return;
+                }
                 const data = await res.json();
+
+                const statusBadgeText = document.getElementById('connection-status-text');
+                if (statusBadgeText) statusBadgeText.textContent = 'Monitoramento ativo';
 
                 if (data.metrics) {
                     document.getElementById('metric-clients').textContent = data.metrics.clients_count;
                     document.getElementById('metric-total').textContent = data.metrics.total;
                     document.getElementById('metric-online').textContent = data.metrics.online;
-                    document.getElementById('metric-attention').textContent = data.metrics.attention;
+                    
+                    const attentionElem = document.getElementById('metric-attention');
+                    if (attentionElem) {
+                        attentionElem.textContent = data.metrics.attention;
+                        const attentionCard = attentionElem.closest('.metric-card--attention');
+                        if (attentionCard) {
+                            attentionCard.classList.toggle('has-attention', data.metrics.attention > 0);
+                        }
+                    }
+
                     document.getElementById('metric-logs-today').textContent = data.metrics.logs_today;
                 }
 
@@ -1455,11 +1472,22 @@
                 }
             } catch (e) {
                 console.error('Polling error:', e);
+                const statusBadgeText = document.getElementById('connection-status-text');
+                if (statusBadgeText) statusBadgeText.textContent = 'Conexão offline';
             } finally {
                 setTimeout(() => {
                     if (iconElem) iconElem.classList.remove('spinning');
                 }, 600);
             }
+        }
+
+        function manualRefresh() {
+            currentCountdown = refreshInterval;
+            const secondsElem = document.getElementById('countdown-seconds');
+            if (secondsElem) {
+                secondsElem.textContent = `${refreshInterval}s`;
+            }
+            fetchDashboardMetrics();
         }
 
         function runCountdown() {

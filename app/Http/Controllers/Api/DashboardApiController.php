@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Client;
+use App\Models\MonitoredService;
 use App\Models\ServiceLog;
 use Illuminate\Http\JsonResponse;
 
@@ -63,7 +64,7 @@ class DashboardApiController extends Controller
                 'is_overdue' => $service->is_overdue,
                 'last_message' => $service->last_message,
                 'last_duration_seconds' => $service->last_duration_seconds,
-                'last_duration_formatted' => $service->last_duration_seconds !== null ? "{$service->last_duration_seconds}s" : null,
+                'last_duration_formatted' => $service->last_duration_seconds !== null ? "{$service->last_duration_seconds}s" : 'Não informada',
                 'last_ip' => $service->last_ip ?? 'Não detectado',
                 'last_ping_at' => $service->last_ping_at?->toIso8601String(),
                 'last_ping_at_formatted' => $service->last_ping_at?->format('d/m/Y H:i:s') ?? 'Nunca',
