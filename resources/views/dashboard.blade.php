@@ -608,38 +608,47 @@
             align-items: center;
             gap: 6px;
             padding: 6px 14px;
-            background: rgba(244, 63, 94, 0.15);
-            border-top: 1px solid rgba(244, 63, 94, 0.22);
-            border-bottom: 1px solid rgba(244, 63, 94, 0.22);
-            color: #fca5a5;
             font-size: 11px;
             font-weight: 500;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
+            border-top: 1px solid transparent;
+            border-bottom: 1px solid transparent;
         }
 
-        .service-mini-alert--failed {
-            background: rgba(244, 63, 94, 0.15);
-            border-top-color: rgba(244, 63, 94, 0.22);
-            border-bottom-color: rgba(244, 63, 94, 0.22);
-            color: #fca5a5;
+        .service-mini-alert.status--ok,
+        .service-mini-alert.service-mini-alert--ok {
+            color: #34d399;
+            background: var(--emerald-bg);
+            border-top-color: rgba(52, 211, 153, 0.25);
+            border-bottom-color: rgba(52, 211, 153, 0.25);
         }
 
-        .service-mini-alert--warning,
-        .service-mini-alert--unknown,
-        .service-mini-alert--attention {
-            background: rgba(245, 158, 11, 0.12);
-            border-top-color: rgba(245, 158, 11, 0.25);
-            border-bottom-color: rgba(245, 158, 11, 0.25);
-            color: #fcd34d;
+        .service-mini-alert.status--overdue,
+        .service-mini-alert.service-mini-alert--overdue {
+            color: #fb923c;
+            background: rgba(251, 146, 60, 0.15);
+            border-top-color: rgba(251, 146, 60, 0.35);
+            border-bottom-color: rgba(251, 146, 60, 0.35);
         }
 
-        .service-mini-alert--ok {
-            background: rgba(16, 185, 129, 0.12);
-            border-top-color: rgba(16, 185, 129, 0.25);
-            border-bottom-color: rgba(16, 185, 129, 0.25);
-            color: #6ee7b7;
+        .service-mini-alert.status--failed,
+        .service-mini-alert.service-mini-alert--failed {
+            color: #f87171;
+            background: var(--rose-bg);
+            border-top-color: rgba(248, 113, 113, 0.35);
+            border-bottom-color: rgba(248, 113, 113, 0.35);
+        }
+
+        .service-mini-alert.status--unknown,
+        .service-mini-alert.service-mini-alert--unknown,
+        .service-mini-alert.service-mini-alert--attention,
+        .service-mini-alert.service-mini-alert--warning {
+            color: #fbbf24;
+            background: var(--amber-bg);
+            border-top-color: rgba(251, 191, 36, 0.25);
+            border-bottom-color: rgba(251, 191, 36, 0.25);
         }
 
         .mini-alert-text {
@@ -828,34 +837,42 @@
         .service-alert-banner {
             padding: 10px 14px;
             font-size: 12px;
-            background: rgba(244, 63, 94, 0.12);
-            border: 1px solid rgba(244, 63, 94, 0.35);
             border-radius: var(--radius-sm);
-            color: #fca5a5;
             display: flex;
             align-items: flex-start;
             gap: 8px;
             line-height: 1.4;
+            border: 1px solid transparent;
         }
 
-        .service-alert-banner--failed {
-            background: rgba(244, 63, 94, 0.12);
-            border-color: rgba(244, 63, 94, 0.35);
-            color: #fca5a5;
+        .service-alert-banner.status--ok,
+        .service-alert-banner.service-alert-banner--ok {
+            color: #34d399;
+            background: var(--emerald-bg);
+            border-color: rgba(52, 211, 153, 0.25);
         }
 
-        .service-alert-banner--warning,
-        .service-alert-banner--unknown,
-        .service-alert-banner--attention {
-            background: rgba(245, 158, 11, 0.12);
-            border-color: rgba(245, 158, 11, 0.35);
-            color: #fcd34d;
+        .service-alert-banner.status--overdue,
+        .service-alert-banner.service-alert-banner--overdue {
+            color: #fb923c;
+            background: rgba(251, 146, 60, 0.15);
+            border-color: rgba(251, 146, 60, 0.35);
         }
 
-        .service-alert-banner--ok {
-            background: rgba(16, 185, 129, 0.12);
-            border-color: rgba(16, 185, 129, 0.35);
-            color: #6ee7b7;
+        .service-alert-banner.status--failed,
+        .service-alert-banner.service-alert-banner--failed {
+            color: #f87171;
+            background: var(--rose-bg);
+            border-color: rgba(248, 113, 113, 0.35);
+        }
+
+        .service-alert-banner.status--unknown,
+        .service-alert-banner.service-alert-banner--unknown,
+        .service-alert-banner.service-alert-banner--attention,
+        .service-alert-banner.service-alert-banner--warning {
+            color: #fbbf24;
+            background: var(--amber-bg);
+            border-color: rgba(251, 191, 36, 0.25);
         }
 
         /* Logs Area inside Modal */
@@ -1104,11 +1121,6 @@
                             'failed' => 'Falha',
                             default => 'Aguardando',
                         };
-                        $miniAlertClass = match($status) {
-                            'ok' => 'service-mini-alert--ok',
-                            'failed' => 'service-mini-alert--failed',
-                            default => 'service-mini-alert--warning',
-                        };
                         $miniAlertIcon = match($status) {
                             'ok' => '💬',
                             'failed' => '⚠️',
@@ -1146,7 +1158,7 @@
                         </div>
 
                         @if($service->last_message || $status === 'failed' || $status === 'overdue')
-                            <div class="service-mini-alert {{ $miniAlertClass }}" title="{{ $service->last_message ?: ($service->is_overdue ? 'Tempo de tolerância ultrapassado! Sem sinal de vida no intervalo previsto.' : 'Falha reportada pelo script.') }}">
+                            <div class="service-mini-alert {{ $statusClass }}" title="{{ $service->last_message ?: ($service->is_overdue ? 'Tempo de tolerância ultrapassado! Sem sinal de vida no intervalo previsto.' : 'Falha reportada pelo script.') }}">
                                 <span>{{ $miniAlertIcon }}</span>
                                 <span class="mini-alert-text">{{ $service->last_message ?: ($service->is_overdue ? 'Tempo de tolerância ultrapassado!' : 'Falha reportada pelo script.') }}</span>
                             </div>
@@ -1336,12 +1348,11 @@
             const alertText = document.getElementById('sm-alert-text');
             const alertIcon = document.getElementById('sm-alert-icon');
             const alertBanner = alertBox ? alertBox.querySelector('.service-alert-banner') : null;
-            const bannerClass = status === 'ok' ? 'service-alert-banner--ok' : (status === 'failed' ? 'service-alert-banner--failed' : 'service-alert-banner--warning');
 
             if (service.last_message || status === 'failed' || service.is_overdue) {
                 alertBox.style.display = 'block';
                 if (alertBanner) {
-                    alertBanner.className = `service-alert-banner ${bannerClass}`;
+                    alertBanner.className = `service-alert-banner ${statusClass}`;
                 }
                 if (alertIcon) {
                     alertIcon.textContent = status === 'ok' ? '💬' : '⚠️';
@@ -1446,7 +1457,6 @@
                 const statusLabel = service.status_label || (status === 'ok' ? 'Operacional' : (status === 'failed' ? 'Falha' : 'Aguardando'));
                 const isAlert = service.last_message || status === 'failed' || service.is_overdue;
                 const defaultAlertMsg = service.is_overdue ? 'Tempo de tolerância ultrapassado!' : 'Falha reportada pelo script.';
-                const miniAlertClass = status === 'ok' ? 'service-mini-alert--ok' : (status === 'failed' ? 'service-mini-alert--failed' : 'service-mini-alert--warning');
                 const miniAlertIcon = status === 'ok' ? '💬' : '⚠️';
 
                 html += `
@@ -1474,7 +1484,7 @@
                         </div>
 
                         ${isAlert ? `
-                            <div class="service-mini-alert ${miniAlertClass}" title="${escapeHtml(service.last_message || defaultAlertMsg)}">
+                            <div class="service-mini-alert ${statusClass}" title="${escapeHtml(service.last_message || defaultAlertMsg)}">
                                 <span>${miniAlertIcon}</span>
                                 <span class="mini-alert-text">${escapeHtml(service.last_message || defaultAlertMsg)}</span>
                             </div>
