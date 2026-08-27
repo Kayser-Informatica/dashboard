@@ -464,11 +464,39 @@
             overflow: hidden;
             display: flex;
             flex-direction: column;
-            transition: all 0.2s ease;
+            transition: all 0.25s ease;
         }
 
         .service-card:hover {
             border-color: var(--line-light);
+        }
+
+        /* Highlighting for failed / alert cards */
+        .service-card[data-status="failed"] {
+            border-color: rgba(244, 63, 94, 0.55);
+            background: linear-gradient(180deg, rgba(244, 63, 94, 0.08) 0%, var(--bg-surface-elevated) 35%);
+            box-shadow: 0 0 20px -3px rgba(244, 63, 94, 0.22), 0 4px 16px rgba(0, 0, 0, 0.35);
+            animation: card-alert-pulse 3s infinite ease-in-out;
+        }
+
+        .service-card[data-status="failed"] .service-card-head {
+            background: rgba(244, 63, 94, 0.15);
+            border-bottom: 1px solid rgba(244, 63, 94, 0.3);
+        }
+
+        .service-card[data-status="failed"] .service-name {
+            color: #fecdd3;
+        }
+
+        @keyframes card-alert-pulse {
+            0%, 100% {
+                border-color: rgba(244, 63, 94, 0.45);
+                box-shadow: 0 0 16px -2px rgba(244, 63, 94, 0.18), 0 4px 16px rgba(0, 0, 0, 0.35);
+            }
+            50% {
+                border-color: rgba(244, 63, 94, 0.85);
+                box-shadow: 0 0 26px 2px rgba(244, 63, 94, 0.38), 0 4px 20px rgba(0, 0, 0, 0.45);
+            }
         }
 
         .service-card-head {
@@ -914,14 +942,14 @@
                                 $status = $service->computed_status;
                                 $statusClass = match($status) {
                                     'ok' => 'status--ok',
-                                    'overdue' => 'status--overdue',
                                     'failed' => 'status--failed',
+                                    'overdue' => 'status--overdue',
                                     default => 'status--unknown',
                                 };
                                 $statusLabel = match($status) {
                                     'ok' => 'Operacional',
-                                    'overdue' => 'Atrasado',
                                     'failed' => 'Falha',
+                                    'overdue' => 'Atrasado',
                                     default => 'Aguardando',
                                 };
                             @endphp
@@ -953,10 +981,10 @@
                                     </div>
                                 </div>
 
-                                @if($service->last_message || $status === 'overdue' || $status === 'failed')
+                                @if($service->last_message || $status === 'failed' || $status === 'overdue')
                                     <div class="service-alert-banner">
                                         <span>⚠️</span>
-                                        <span>{{ $service->last_message ?: ($status === 'overdue' ? 'Não enviou sinal de vida no intervalo combinado!' : 'Falha reportada pelo script.') }}</span>
+                                        <span>{{ $service->last_message ?: ($service->is_overdue ? 'Tempo de tolerância ultrapassado! Sem sinal de vida no intervalo previsto.' : 'Falha reportada pelo script.') }}</span>
                                     </div>
                                 @endif
 
@@ -1136,8 +1164,10 @@
                 } else {
                     client.services.forEach(service => {
                         const status = service.computed_status || 'unknown';
-                        const statusClass = status === 'ok' ? 'status--ok' : (status === 'overdue' ? 'status--overdue' : (status === 'failed' ? 'status--failed' : 'status--unknown'));
-                        const statusLabel = service.status_label || 'Aguardando';
+                        const statusClass = status === 'ok' ? 'status--ok' : (status === 'failed' ? 'status--failed' : (status === 'overdue' ? 'status--overdue' : 'status--unknown'));
+                        const statusLabel = service.status_label || (status === 'ok' ? 'Operacional' : (status === 'failed' ? 'Falha' : (status === 'overdue' ? 'Atrasado' : 'Aguardando')));
+                        const isAlert = service.last_message || status === 'failed' || status === 'overdue';
+                        const defaultAlertMsg = service.is_overdue ? 'Tempo de tolerância ultrapassado! Sem sinal de vida no intervalo previsto.' : 'Falha reportada pelo script.';
 
                         html += `
                             <article class="service-card" data-service-name="${escapeHtml((service.name || '').toLowerCase())}" data-status="${status}">
@@ -1161,10 +1191,10 @@
                                     </div>
                                 </div>
 
-                                ${(service.last_message || status === 'overdue' || status === 'failed') ? `
+                                ${isAlert ? `
                                     <div class="service-alert-banner">
                                         <span>⚠️</span>
-                                        <span>${escapeHtml(service.last_message || (status === 'overdue' ? 'Não enviou sinal de vida no intervalo combinado!' : 'Falha reportada pelo script.'))}</span>
+                                        <span>${escapeHtml(service.last_message || defaultAlertMsg)}</span>
                                     </div>
                                 ` : ''}
 
