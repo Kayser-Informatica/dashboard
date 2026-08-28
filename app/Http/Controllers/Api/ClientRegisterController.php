@@ -15,11 +15,15 @@ class ClientRegisterController extends Controller
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:120'],
             'slug' => ['nullable', 'string', 'max:140', 'regex:/^[a-z0-9]+(?:-[a-z0-9]+)*$/'],
+            'email' => ['required', 'string', 'email', 'max:190'],
         ], [
             'name.required' => 'O nome do cliente (name) é obrigatório.',
             'name.string' => 'O nome do cliente deve ser um texto.',
             'name.max' => 'O nome do cliente não pode ultrapassar 120 caracteres.',
             'slug.regex' => 'O slug informado possui formato inválido. Use apenas letras minúsculas, números e hífens.',
+            'email.required' => 'O e-mail do cliente (email) é obrigatório.',
+            'email.email' => 'O e-mail informado possui um formato inválido.',
+            'email.max' => 'O e-mail não pode ultrapassar 190 caracteres.',
         ]);
 
         $slug = $validated['slug'] ?? Str::slug($validated['name']);
@@ -37,6 +41,7 @@ class ClientRegisterController extends Controller
         $client = Client::create([
             'name' => $validated['name'],
             'slug' => $slug,
+            'email' => $validated['email'],
             'api_token' => $apiToken,
             'active' => true,
         ]);
@@ -47,6 +52,7 @@ class ClientRegisterController extends Controller
                 'id' => $client->id,
                 'name' => $client->name,
                 'slug' => $client->slug,
+                'email' => $client->email,
             ],
             'api_token' => $apiToken,
         ], 201);

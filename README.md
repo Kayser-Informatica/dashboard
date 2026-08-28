@@ -21,7 +21,8 @@ Dashboard em **Laravel 13** para monitoramento centralizado de clientes, serviç
 
 | Método | Endpoint | Autenticação | Finalidade |
 | :--- | :--- | :--- | :--- |
-| `POST` | `/api/clients/register` | Pública | Cadastra um novo cliente e emite seu `api_token` |
+| `POST` | `/api/clients/register` | Pública | Cadastra um novo cliente com e-mail e emite seu `api_token` |
+| `POST` | `/api/clients/recover-token` | Pública | Envia o token de API por e-mail caso os dados coincidam |
 | `POST` | `/api/heartbeat` | Token do Cliente | Registra sinal de vida, periodicidade, status e log anexo |
 | `GET` | `/api/services/{service}/logs/{log}/download` | Pública/Sessão | Download do arquivo de log original |
 | `GET` | `/api/dashboard/metrics` | Pública | Retorna métricas agregadas e clientes para polling reativo |
@@ -31,7 +32,7 @@ Dashboard em **Laravel 13** para monitoramento centralizado de clientes, serviç
 
 ## 1. Como Cadastrar um Cliente
 
-Cadastre o cliente uma única vez para receber o token de autenticação:
+Cadastre o cliente informando o nome e o e-mail de recuperação (obrigatório). O mesmo e-mail pode ser vinculado a vários clientes, e não poderá ser alterado posteriormente:
 
 ```bash
 curl -X POST http://localhost:8000/api/clients/register \
@@ -39,18 +40,20 @@ curl -X POST http://localhost:8000/api/clients/register \
   -H 'Accept: application/json' \
   -d '{
     "name": "NeeMedT",
-    "slug": "neemedt"
+    "slug": "neemedt",
+    "email": "ti@neemedt.com"
   }'
 ```
 
 **Resposta (201 Created):**
 ```json
 {
-  "message": "Cliente cadastrado com sucesso! Guarde este token de API...",
+  "message": "Cliente cadastrado com sucesso! Guarde este token de API com segurança, ele é necessário para enviar pings e logs de monitoramento.",
   "client": {
     "id": 1,
     "name": "NeeMedT",
-    "slug": "neemedt"
+    "slug": "neemedt",
+    "email": "ti@neemedt.com"
   },
   "api_token": "clt_live_a1b2c3d4e5f67890abcdef1234567890abcdef12"
 }
@@ -58,7 +61,32 @@ curl -X POST http://localhost:8000/api/clients/register \
 
 ---
 
-## 2. Como Enviar um Heartbeat (Sinal de Vida)
+## 2. Como Recuperar o Token de API (Em Caso de Perda)
+
+Se o token de API do cliente for perdido, utilize o endpoint de recuperação informando o e-mail cadastrado e o nome ou slug do cliente:
+
+```bash
+curl -X POST http://localhost:8000/api/clients/recover-token \
+  -H 'Content-Type: application/json' \
+  -H 'Accept: application/json' \
+  -d '{
+    "email": "ti@neemedt.com",
+    "client": "neemedt"
+  }'
+```
+
+**Resposta (200 OK):**
+```json
+{
+  "message": "Se os dados informados estiverem corretos, um e-mail com as credenciais e o token de API foi enviado para o endereço cadastrado."
+}
+```
+
+*(Caso os dados coincidam, o cliente receberá um e-mail com o token de acesso e instruções de cabeçalho Bearer).*
+
+---
+
+## 3. Como Enviar um Heartbeat (Sinal de Vida)
 
 ### A) Ping Simples em JSON (Ex: Rotina de E-mails a cada 60 min)
 ```bash

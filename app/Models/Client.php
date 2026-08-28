@@ -14,9 +14,19 @@ class Client extends Model
     protected $fillable = [
         'name',
         'slug',
+        'email',
         'api_token',
         'active',
     ];
+
+    protected static function booted(): void
+    {
+        static::updating(function (Client $client): void {
+            if ($client->isDirty('email')) {
+                $client->email = $client->getOriginal('email');
+            }
+        });
+    }
 
     protected function casts(): array
     {

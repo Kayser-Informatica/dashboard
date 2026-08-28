@@ -23,12 +23,14 @@ class MonitoredServicesTest extends TestCase
         $response = $this->postJson('/api/clients/register', [
             'name' => 'NeeMedT',
             'slug' => 'neemedt',
+            'email' => 'ti@neemedt.com',
         ]);
 
         $response->assertCreated()
             ->assertJsonPath('client.name', 'NeeMedT')
             ->assertJsonPath('client.slug', 'neemedt')
-            ->assertJsonStructure(['message', 'client' => ['id', 'name', 'slug'], 'api_token']);
+            ->assertJsonPath('client.email', 'ti@neemedt.com')
+            ->assertJsonStructure(['message', 'client' => ['id', 'name', 'slug', 'email'], 'api_token']);
 
         $token = $response->json('api_token');
         $this->assertStringStartsWith('clt_live_', $token);
@@ -36,6 +38,7 @@ class MonitoredServicesTest extends TestCase
         $this->assertDatabaseHas('clients', [
             'name' => 'NeeMedT',
             'slug' => 'neemedt',
+            'email' => 'ti@neemedt.com',
             'api_token' => $token,
         ]);
     }
@@ -45,12 +48,14 @@ class MonitoredServicesTest extends TestCase
         Client::create([
             'name' => 'NeeMedT',
             'slug' => 'neemedt',
+            'email' => 'ti@neemedt.com',
             'api_token' => Client::generateToken(),
         ]);
 
         $response = $this->postJson('/api/clients/register', [
             'name' => 'NeeMedT',
             'slug' => 'neemedt',
+            'email' => 'ti@neemedt.com',
         ]);
 
         $response->assertStatus(422)
@@ -71,6 +76,7 @@ class MonitoredServicesTest extends TestCase
         $client = Client::create([
             'name' => 'NeeMedT',
             'slug' => 'neemedt',
+            'email' => 'ti@neemedt.com',
             'api_token' => Client::generateToken(),
         ]);
 
@@ -110,6 +116,7 @@ class MonitoredServicesTest extends TestCase
         $client = Client::create([
             'name' => 'NeeMedT',
             'slug' => 'neemedt',
+            'email' => 'ti@neemedt.com',
             'api_token' => Client::generateToken(),
         ]);
 
@@ -147,6 +154,7 @@ class MonitoredServicesTest extends TestCase
         $client = Client::create([
             'name' => 'NeeMedT',
             'slug' => 'neemedt',
+            'email' => 'ti@neemedt.com',
             'api_token' => Client::generateToken(),
         ]);
 
@@ -178,6 +186,7 @@ class MonitoredServicesTest extends TestCase
         $client = Client::create([
             'name' => 'NeeMedT',
             'slug' => 'neemedt',
+            'email' => 'ti@neemedt.com',
             'api_token' => Client::generateToken(),
         ]);
 
@@ -214,6 +223,7 @@ class MonitoredServicesTest extends TestCase
         $client = Client::create([
             'name' => 'NeeMedT',
             'slug' => 'neemedt',
+            'email' => 'ti@neemedt.com',
             'api_token' => Client::generateToken(),
         ]);
 
@@ -247,6 +257,7 @@ class MonitoredServicesTest extends TestCase
         $client = Client::create([
             'name' => 'NeeMedT',
             'slug' => 'neemedt',
+            'email' => 'ti@neemedt.com',
             'api_token' => Client::generateToken(),
         ]);
 

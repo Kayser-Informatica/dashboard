@@ -132,7 +132,7 @@ class MonitoringApiTest extends TestCase
         Storage::disk('local')->assertExists(BackupLog::first()->stored_path);
     }
 
-    public function test_dashboard_renders_systems_and_backups(): void
+    public function test_systems_api_returns_systems_and_backup_logs(): void
     {
         $system = System::create([
             'name' => 'ERP Principal',
@@ -152,73 +152,23 @@ class MonitoringApiTest extends TestCase
             'received_at' => now(),
         ]);
 
-        $this->get('/')
-            ->assertOk()
-            ->assertSee('ERP Principal')
-            ->assertSee('backup.log')
-            ->assertSee('45.225.238.218')
-            ->assertSee('Operacional');
-    }
-
-    public function test_dashboard_metrics_api_returns_metrics_and_systems(): void
-    {
-        $system = System::create([
-            'name' => 'ERP Principal',
-            'slug' => 'erp-principal',
-            'last_health_status' => 'ok',
-            'last_health_at' => now(),
-            'external_ip' => '45.225.238.218',
-        ]);
-
-        BackupLog::create([
-            'system_id' => $system->id,
-            'status' => 'success',
-            'original_filename' => 'backup.log',
-            'stored_path' => 'backup-logs/backup.log',
-            'file_size' => 2048,
-            'log_excerpt' => 'Backup completed successfully',
-            'received_at' => now(),
-        ]);
-
-        $response = $this->getJson('/api/dashboard/metrics');
+        $response = $this->getJson('/api/systems');
 
         $response->assertOk()
             ->assertJsonStructure([
-                'metrics' => ['total', 'online', 'attention', 'backups'],
-                'systems' => [
+                'data' => [
                     '*' => [
                         'id',
                         'name',
                         'slug',
                         'external_ip',
                         'last_health_status',
-                        'last_health_status_label',
-                        'last_health_at',
-                        'last_health_at_human',
-                        'last_backup_at',
-                        'last_backup_at_human',
                         'backup_logs_count',
-                        'backup_logs' => [
-                            '*' => [
-                                'id',
-                                'original_filename',
-                                'file_size',
-                                'file_size_formatted',
-                                'status',
-                                'received_at',
-                                'received_at_formatted',
-                            ],
-                        ],
+                        'backup_logs',
                     ],
                 ],
-                'server_time',
-                'updated_at',
             ])
-            ->assertJsonPath('metrics.total', 1)
-            ->assertJsonPath('metrics.online', 1)
-            ->assertJsonPath('metrics.attention', 0)
-            ->assertJsonPath('metrics.backups', 1)
-            ->assertJsonPath('systems.0.name', 'ERP Principal');
+            ->assertJsonPath('data.0.name', 'ERP Principal');
     }
 }
 

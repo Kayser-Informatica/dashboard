@@ -79,7 +79,7 @@
       "method": "POST",
       "body": {
         "mimeType": "application/json",
-        "text": "{\n  \"name\": \"NeeMedT\",\n  \"slug\": \"neemedt\"\n}"
+        "text": "{\n  \"name\": \"NeeMedT\",\n  \"slug\": \"neemedt\",\n  \"email\": \"ti@neemedt.com\"\n}"
       },
       "parameters": [],
       "headers": [
@@ -94,6 +94,34 @@
       ],
       "authentication": {},
       "metaSortKey": -100,
+      "_type": "request"
+    },
+    {
+      "_id": "req_client_recover_token",
+      "parentId": "fld_clients",
+      "modified": 1755709500000,
+      "created": 1755709500000,
+      "url": "{{ _.base_url }}/api/clients/recover-token",
+      "name": "Recuperar Token de API",
+      "description": "Envia o token de API por e-mail caso os dados informados coincidam.",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"email\": \"ti@neemedt.com\",\n  \"client\": \"neemedt\"\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "name": "Accept",
+          "value": "application/json"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -90,
       "_type": "request"
     },
     {

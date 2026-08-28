@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\BackupLogController;
 use App\Http\Controllers\Api\ClientRegisterController;
+use App\Http\Controllers\Api\ClientTokenRecoveryController;
 use App\Http\Controllers\Api\DashboardApiController;
 use App\Http\Controllers\Api\HealthcheckController;
 use App\Http\Controllers\Api\HeartbeatController;
@@ -18,6 +19,11 @@ use Illuminate\Support\Facades\Route;
 Route::post('/clients/register', ClientRegisterController::class)
     ->middleware('throttle:60,1')
     ->name('api.clients.register');
+
+// Recuperação de Token de API do Cliente via E-mail
+Route::post('/clients/recover-token', ClientTokenRecoveryController::class)
+    ->middleware('throttle:10,1')
+    ->name('api.clients.recover_token');
 
 // Heartbeat / Ping do Serviço (com periodicidade, e-mails de alerta e upload de log)
 Route::post('/heartbeat', HeartbeatController::class)
