@@ -1,19 +1,19 @@
-# Systems Control
+# Vigilant (Systems Control)
 
-Dashboard em **Laravel 13** para monitoramento centralizado de clientes, serviços periódicos (estilo Heartbeat / Dead Man's Switch), arquivos de logs de execução e alertas automáticos por e-mail.
+Dashboard em **Laravel 13** para monitoramento centralizado de clientes, serviços periódicos (estilo Heartbeat / Dead Man's Switch), arquivos de logs de execução, alertas automáticos por e-mail e painel operacional para NOC.
 
 ---
 
 ## 🌟 Recursos Principais
 
-* **Cadastro de Clientes com Token Exclusivo:** Cada cliente se cadastra e recebe uma chave de API única (`clt_live_...`).
-* **Monitoramento Periódico de Serviços (Heartbeat):** Cada serviço (ex: *Envio de e-mails*, *Backup do sistema*) avisa o dashboard quando executa, informando a periodicidade esperada (ex: a cada 60 min ou 24h).
-* **Detecção Automática de Atrasos:** Se um serviço não enviar sinal de vida dentro do prazo combinado (+ tolerância), o painel muda para status **Atrasado** e destaca o alerta.
-* **Alertas por E-mail:** Envio automático de notificações para uma lista de e-mails (`notification_emails`) em caso de:
-  1. Falha explícita (`ok: false`).
-  2. Atraso/inatividade do heartbeat (via `php artisan monitors:check-deadlines`).
-  3. Notificação de normalização/recuperação (`ok: true`).
-* **Anexo e Visualizador de Logs:** Envio opcional de arquivos `.log`/`.txt` junto com o heartbeat, com visualizador estilo terminal no Dashboard e download do arquivo original.
+* **Cards Interativos de Filtro por Cliente:** Painel com cartões visuais para cada cliente, indicando a quantidade de serviços monitorados, status em tempo real e badges de alerta (atenção/atraso) com clique para filtragem instantânea.
+* **Cadastro de Clientes com Token Seguro (SHA-256):** Cada cliente possui identificador exclusivo e token de API criptografado com hash SHA-256 no banco de dados. Suporta bloqueio de registro anônimo via chave mestra (`CLIENT_REGISTRATION_SECRET`).
+* **Proteção e Autenticação do Dashboard:** Proteção opcional por HTTP Basic Auth configurável no `.env` (`DASHBOARD_AUTH_ENABLED`) com suporte a **Whitelist de IPs** (`DASHBOARD_IP_WHITELIST`) para acesso direto sem senha da rede da empresa/NOC.
+* **Monitoramento Periódico de Serviços (Heartbeat):** Serviços periódicos (ex: *Backups*, *Envio de e-mails*, *Robôs de integração*) reportam sua execução com intervalo esperado e tempo de tolerância.
+* **Detecção Automática de Atrasos & Alertas por E-mail:** Notificações imediatas em caso de falha explícita (`ok: false`), atraso na execução (`monitors:check-deadlines`) ou recuperação/normalização de serviço.
+* **Anexo, Visualizador e Download de Logs:** Upload seguro de arquivos `.log`, `.txt`, `.csv`, `.json`, `.gz` ou `.zip` com visualizador em estilo terminal e download protegido.
+* **Expurgo Automático de Logs Antigos:** Comando diário (`php artisan logs:prune`) para limpeza automática de logs e arquivos físicos com mais de X dias (`LOG_RETENTION_DAYS`).
+* **Segurança & Hardening:** Cabeçalhos HTTP de segurança (`X-Frame-Options`, `X-Content-Type-Options`, `Referrer-Policy`, `HSTS`), sanitização rigorosa de caracteres e rate limiting ativo em todas as rotas da API.
 
 ---
 
@@ -21,12 +21,12 @@ Dashboard em **Laravel 13** para monitoramento centralizado de clientes, serviç
 
 | Método | Endpoint | Autenticação | Finalidade |
 | :--- | :--- | :--- | :--- |
-| `POST` | `/api/clients/register` | Pública | Cadastra um novo cliente com e-mail e emite seu `api_token` |
-| `POST` | `/api/clients/recover-token` | Pública | Envia o token de API por e-mail caso os dados coincidam |
-| `POST` | `/api/heartbeat` | Token do Cliente | Registra sinal de vida, periodicidade, status e log anexo |
-| `GET` | `/api/services/{service}/logs/{log}/download` | Pública/Sessão | Download do arquivo de log original |
-| `GET` | `/api/dashboard/metrics` | Pública | Retorna métricas agregadas e clientes para polling reativo |
-| `GET` | `/` | Pública | Abre o Dashboard operacional para monitores e NOC |
+| `POST` | `/api/clients/register` | Pública ou Chave Mestra | Cadastra um novo cliente com e-mail e emite seu `api_token` |
+| `POST` | `/api/clients/recover-token` | Pública (Rate Limited) | Rotaciona e envia novo token de API por e-mail |
+| `POST` | `/api/heartbeat` | Token do Cliente (`Bearer`) | Registra sinal de vida, periodicidade, status e anexo de log |
+| `GET` | `/api/services/{service}/logs/{log}/download` | Dashboard Auth / Sessão | Download do arquivo de log original |
+| `GET` | `/api/dashboard/metrics` | Dashboard Auth / Whitelist | Retorna métricas agregadas e clientes para polling reativo |
+| `GET` | `/` | Dashboard Auth / Whitelist | Abre o Dashboard operacional para monitores e NOC |
 
 ---
 
