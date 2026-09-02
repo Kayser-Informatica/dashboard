@@ -133,12 +133,17 @@ php artisan monitors:check-deadlines
 
 ---
 
-## 🔌 Integração Delphi (`examples/delphi`)
+## 🔌 Exemplos de Integração
 
-Para aplicações desktop, serviços Windows ou servidores desenvolvidos em **Delphi** (10.1 Berlin ou superior), está disponível uma unit pronta e desacoplada para envio de heartbeat e arquivos de log:
-
+### 1. Delphi (`examples/delphi`)
+Para aplicações desktop, serviços Windows ou servidores desenvolvidos em **Delphi** (10.1 Berlin ou superior):
 * **Classe Delphi:** [`examples/delphi/uHeartbeatMonitor.pas`](examples/delphi/uHeartbeatMonitor.pas) — Classe `THeartbeatMonitor` nativa (`System.Net.HttpClient`), não-bloqueante (threads assíncronas), com suporte a timer periódico, disparo sob demanda e anexo de arquivos de log (`multipart/form-data`).
-* **Documentação & Exemplos:** Consulte o guia detalhado em [`examples/delphi/README_HeartbeatMonitor.md`](examples/delphi/README_HeartbeatMonitor.md) com exemplos práticos para VCL, Horse e serviços Console/Windows.
+* **Documentação & Exemplos:** Consulte o guia detalhado em [`examples/delphi/README_HeartbeatMonitor.md`](examples/delphi/README_HeartbeatMonitor.md).
+
+### 2. cURL / Batch / Shell Script (`examples/curl`)
+Para rotinas de backup, sincronização de arquivos, scripts de banco de dados e tarefas agendadas:
+* **Script Modelo Windows:** [`examples/curl/exemplo_backup.bat`](examples/curl/exemplo_backup.bat) — Script Batch com captura de logs, validação de erro e envio de heartbeat.
+* **Documentação & Exemplos:** Consulte o guia em [`examples/curl/README.md`](examples/curl/README.md) com exemplos para Batch, PowerShell e Bash Linux.
 
 ---
 
