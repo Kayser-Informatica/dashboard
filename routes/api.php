@@ -55,4 +55,5 @@ Route::post('/backups/logs', [BackupLogController::class, 'store'])
     ->name('api.backups.logs.store');
 
 Route::get('/systems', [HealthcheckController::class, 'index'])
+    ->middleware('dashboard.auth')
     ->name('api.systems.index');
