@@ -6,7 +6,7 @@ Dashboard em **Laravel 13** para monitoramento centralizado de clientes, serviç
 
 ## 🌟 Recursos Principais
 
-* **Cadastro de Clientes com Token Exclusivo:** Cada cliente (ex: *NeeMedT*) se cadastra e recebe uma chave de API única (`clt_live_...`).
+* **Cadastro de Clientes com Token Exclusivo:** Cada cliente se cadastra e recebe uma chave de API única (`clt_live_...`).
 * **Monitoramento Periódico de Serviços (Heartbeat):** Cada serviço (ex: *Envio de e-mails*, *Backup do sistema*) avisa o dashboard quando executa, informando a periodicidade esperada (ex: a cada 60 min ou 24h).
 * **Detecção Automática de Atrasos:** Se um serviço não enviar sinal de vida dentro do prazo combinado (+ tolerância), o painel muda para status **Atrasado** e destaca o alerta.
 * **Alertas por E-mail:** Envio automático de notificações para uma lista de e-mails (`notification_emails`) em caso de:
@@ -39,9 +39,9 @@ curl -X POST http://localhost:8000/api/clients/register \
   -H 'Content-Type: application/json' \
   -H 'Accept: application/json' \
   -d '{
-    "name": "NeeMedT",
-    "slug": "neemedt",
-    "email": "ti@neemedt.com"
+    "name": "Meu Cliente",
+    "slug": "meu-cliente",
+    "email": "ti@meucliente.com"
   }'
 ```
 
@@ -51,9 +51,9 @@ curl -X POST http://localhost:8000/api/clients/register \
   "message": "Cliente cadastrado com sucesso! Guarde este token de API com segurança, ele é necessário para enviar pings e logs de monitoramento.",
   "client": {
     "id": 1,
-    "name": "NeeMedT",
-    "slug": "neemedt",
-    "email": "ti@neemedt.com"
+    "name": "Meu Cliente",
+    "slug": "meu-cliente",
+    "email": "ti@meucliente.com"
   },
   "api_token": "clt_live_a1b2c3d4e5f67890abcdef1234567890abcdef12"
 }
@@ -70,8 +70,8 @@ curl -X POST http://localhost:8000/api/clients/recover-token \
   -H 'Content-Type: application/json' \
   -H 'Accept: application/json' \
   -d '{
-    "email": "ti@neemedt.com",
-    "client": "neemedt"
+    "email": "ti@meucliente.com",
+    "client": "Meu Cliente"
   }'
 ```
 
@@ -101,7 +101,7 @@ curl -X POST http://localhost:8000/api/heartbeat \
     "ok": true,
     "message": "45 e-mails enviados em 2 segundos",
     "duration_seconds": 2,
-    "notification_emails": "ti@neemedt.com; suporte@empresa.com"
+    "notification_emails": "ti@meucliente.com; suporte@meucliente.com"
   }'
 ```
 
@@ -115,7 +115,7 @@ curl -X POST http://localhost:8000/api/heartbeat \
   -F 'grace_minutes=30' \
   -F 'ok=true' \
   -F 'message=Backup concluído com sucesso' \
-  -F 'notification_emails=ti@neemedt.com; suporte@empresa.com' \
+  -F 'notification_emails=ti@meucliente.com; suporte@meucliente.com' \
   -F 'log_file=@/var/log/backup-erp.log'
 ```
 
