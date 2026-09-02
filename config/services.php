@@ -41,6 +41,9 @@ return [
 
     'dashboard' => [
         'refresh_interval' => (int) env('DASHBOARD_REFRESH_INTERVAL_SECONDS', 30),
+        'auth_enabled' => (bool) env('DASHBOARD_AUTH_ENABLED', false),
+        'username' => env('DASHBOARD_USERNAME', 'admin'),
+        'password' => env('DASHBOARD_PASSWORD'),
     ],
 
 ];

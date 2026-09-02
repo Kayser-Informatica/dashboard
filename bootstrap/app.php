@@ -16,6 +16,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'monitoring.token' => \App\Http\Middleware\VerifyMonitoringToken::class,
             'client.token' => \App\Http\Middleware\VerifyClientToken::class,
+            'dashboard.auth' => \App\Http\Middleware\DashboardBasicAuth::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

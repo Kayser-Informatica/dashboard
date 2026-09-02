@@ -32,10 +32,12 @@ Route::post('/heartbeat', HeartbeatController::class)
 
 // Download do arquivo de log do serviço
 Route::get('/services/{service}/logs/{log}/download', ServiceLogDownloadController::class)
+    ->middleware('dashboard.auth')
     ->name('api.services.logs.download');
 
 // Métricas agregadas do Dashboard para polling em tempo real
 Route::get('/dashboard/metrics', DashboardApiController::class)
+    ->middleware('dashboard.auth')
     ->name('api.dashboard.metrics');
 
 

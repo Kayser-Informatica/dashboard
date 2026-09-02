@@ -235,8 +235,9 @@ No seu arquivo `.env`:
 
 | Variável | Padrão | Descrição |
 | :--- | :--- | :--- |
-| `APP_PORT` | `8000` | Porta HTTP da aplicação no host (evita conflitos com a porta 80). |
-| `VITE_PORT` | `5174` | Porta do servidor de desenvolvimento Vite. |
+| `DASHBOARD_AUTH_ENABLED` | `false` | Se `true`, exige usuário e senha (HTTP Basic Auth) para acessar o Dashboard, métricas e logs. |
+| `DASHBOARD_USERNAME` | `admin` | Nome de usuário para acesso administrativo ao Dashboard. |
+| `DASHBOARD_PASSWORD` | *(vazio)* | Senha de acesso ao Dashboard (obrigatória caso `DASHBOARD_AUTH_ENABLED=true`). |
 | `DASHBOARD_REFRESH_INTERVAL_SECONDS` | `30` | Intervalo em segundos para atualização reativa automática do painel sem reload. |
 | `APP_TIMEZONE` | `America/Sao_Paulo` | Fuso horário para registro e exibição das datas de execução. |
 | `MAIL_MAILER` | `smtp` / `log` | Driver de envio de e-mails (`smtp`, `ses`, `mailgun`, etc.). |
