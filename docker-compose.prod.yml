@@ -9,7 +9,7 @@ services:
         environment:
             APP_NAME: 'Systems Control'
             APP_ENV: production
-            APP_KEY: '${APP_KEY:-base64:7kK9XwFhKqWwY5b8U1a3c7e9G2i4k6m8O0q2s4u6w8A=}'
+            APP_KEY: '${APP_KEY}'
             APP_DEBUG: '${APP_DEBUG:-false}'
             APP_URL: '${APP_URL:-http://localhost:8000}'
             APP_TIMEZONE: America/Sao_Paulo
@@ -19,7 +19,7 @@ services:
             DB_PORT: 3306
             DB_DATABASE: '${DB_DATABASE:-dashboard}'
             DB_USERNAME: '${DB_USERNAME:-dashboard_user}'
-            DB_PASSWORD: '${DB_PASSWORD:-secret}'
+            DB_PASSWORD: '${DB_PASSWORD}'
             SESSION_DRIVER: database
             CACHE_STORE: database
             QUEUE_CONNECTION: sync
@@ -39,8 +39,8 @@ services:
         environment:
             MYSQL_DATABASE: '${DB_DATABASE:-dashboard}'
             MYSQL_USER: '${DB_USERNAME:-dashboard_user}'
-            MYSQL_PASSWORD: '${DB_PASSWORD:-secret}'
-            MYSQL_ROOT_PASSWORD: '${DB_ROOT_PASSWORD:-root_secret}'
+            MYSQL_PASSWORD: '${DB_PASSWORD}'
+            MYSQL_ROOT_PASSWORD: '${DB_ROOT_PASSWORD}'
         volumes:
             - 'mysql_data:/var/lib/mysql'
         healthcheck:
@@ -52,7 +52,7 @@ services:
                 - localhost
                 - '-u'
                 - root
-                - '-p${DB_ROOT_PASSWORD:-root_secret}'
+                - '-p${DB_ROOT_PASSWORD}'
             interval: 5s
             timeout: 5s
             retries: 10
