@@ -47,4 +47,9 @@ return [
         'ip_whitelist' => env('DASHBOARD_IP_WHITELIST', ''),
     ],
 
+    'clients' => [
+        'allow_public_registration' => (bool) env('ALLOW_PUBLIC_REGISTRATION', true),
+        'registration_secret' => env('CLIENT_REGISTRATION_SECRET'),
+    ],
+
 ];

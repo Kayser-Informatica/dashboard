@@ -12,10 +12,28 @@ class ClientRegisterController extends Controller
 {
     public function __invoke(Request $request): JsonResponse
     {
+        // Verificação de autorização de cadastro (Se cadastro público estiver desativado ou secret configurado)
+        $allowPublic = (bool) config('services.clients.allow_public_registration', true);
+        $registrationSecret = (string) config('services.clients.registration_secret', '');
+
+        if (! $allowPublic || $registrationSecret !== '') {
+            $providedSecret = (string) ($request->header('X-Registration-Secret')
+                ?: ($request->bearerToken()
+                ?: $request->input('registration_secret', '')));
+
+            if ($registrationSecret === '' || ! hash_equals($registrationSecret, $providedSecret)) {
+                return response()->json([
+                    'message' => 'O cadastro público de novos clientes está desativado ou a chave mestra informada é inválida.',
+                    'error' => 'registration_forbidden',
+                ], 403);
+            }
+        }
+
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:120'],
             'slug' => ['nullable', 'string', 'max:140', 'regex:/^[a-z0-9]+(?:-[a-z0-9]+)*$/'],
             'email' => ['required', 'string', 'email', 'max:190'],
+            'registration_secret' => ['nullable', 'string'],
         ], [
             'name.required' => 'O nome do cliente (name) é obrigatório.',
             'name.string' => 'O nome do cliente deve ser um texto.',
@@ -36,13 +54,13 @@ class ClientRegisterController extends Controller
             ], 422);
         }
 
-        $apiToken = Client::generateToken();
+        $plainApiToken = Client::generateToken();
 
         $client = Client::create([
             'name' => $validated['name'],
             'slug' => $slug,
             'email' => $validated['email'],
-            'api_token' => $apiToken,
+            'api_token' => Client::hashToken($plainApiToken),
             'active' => true,
         ]);
 
@@ -54,7 +72,7 @@ class ClientRegisterController extends Controller
                 'slug' => $client->slug,
                 'email' => $client->email,
             ],
-            'api_token' => $apiToken,
+            'api_token' => $plainApiToken,
         ], 201);
     }
 }

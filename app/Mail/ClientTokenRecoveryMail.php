@@ -14,7 +14,8 @@ class ClientTokenRecoveryMail extends Mailable
     use Queueable, SerializesModels;
 
     public function __construct(
-        public Client $client
+        public Client $client,
+        public ?string $plainToken = null
     ) {}
 
     public function envelope(): Envelope

@@ -53,10 +53,14 @@ class ClientRegistrationAndRecoveryTest extends TestCase
                 'api_token',
             ]);
 
+        $plainToken = $response->json('api_token');
+        $this->assertNotEmpty($plainToken);
+
         $this->assertDatabaseHas('clients', [
             'name' => 'Kayser Filial Sul',
             'slug' => 'kayser-filial-sul',
             'email' => 'admin@kayser.com.br',
+            'api_token' => hash('sha256', $plainToken),
         ]);
     }
 
@@ -116,7 +120,7 @@ class ClientRegistrationAndRecoveryTest extends TestCase
             'name' => 'NeeMedT Diagnósticos',
             'slug' => 'neemedt-diagnosticos',
             'email' => 'suporte@neemedt.com',
-            'api_token' => $token,
+            'api_token' => Client::hashToken($token),
         ]);
 
         // Teste passando o slug do cliente
@@ -128,10 +132,11 @@ class ClientRegistrationAndRecoveryTest extends TestCase
         $response->assertOk()
             ->assertJsonStructure(['message']);
 
-        Mail::assertSent(ClientTokenRecoveryMail::class, function (ClientTokenRecoveryMail $mail) use ($client, $token) {
+        Mail::assertSent(ClientTokenRecoveryMail::class, function (ClientTokenRecoveryMail $mail) use ($client) {
             return $mail->hasTo('suporte@neemedt.com') &&
                    $mail->client->id === $client->id &&
-                   $mail->client->api_token === $token;
+                   $mail->plainToken !== null &&
+                   str_starts_with($mail->plainToken, 'clt_live_');
         });
     }
 

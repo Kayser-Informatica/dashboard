@@ -42,7 +42,7 @@
             </table>
 
             <h4 style="margin-bottom: 6px; color: #1e293b;">Seu Token de API:</h4>
-            <div class="token-box">{{ $client->api_token }}</div>
+            <div class="token-box">{{ $plainToken ?? $client->api_token }}</div>
 
             <div class="warning-box">
                 <strong>Atenção:</strong> Este token permite enviar sinais de vida (heartbeats) e logs para os serviços deste cliente. Mantenha-o em sigilo e seguro.
@@ -52,7 +52,7 @@
             <p style="font-size: 13px; color: #4b5563; margin-top: 0;">
                 Envie o token no cabeçalho <code>Authorization</code> como <code>Bearer Token</code>:
             </p>
-            <div class="curl-example">Authorization: Bearer {{ $client->api_token }}</div>
+            <div class="curl-example">Authorization: Bearer {{ $plainToken ?? $client->api_token }}</div>
 
             <p style="margin-top: 24px; font-size: 13px; color: #6b7280;">
                 Se você não solicitou a recuperação deste token, por favor ignore esta mensagem.

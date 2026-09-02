@@ -20,7 +20,15 @@ class VerifyClientToken
             ], 401);
         }
 
-        $client = Client::where('api_token', $token)->where('active', true)->first();
+        $tokenHash = hash('sha256', $token);
+
+        $client = Client::query()
+            ->where('active', true)
+            ->where(function ($query) use ($token, $tokenHash): void {
+                $query->where('api_token', $tokenHash)
+                    ->orWhere('api_token', $token);
+            })
+            ->first();
 
         if (! $client) {
             return response()->json([

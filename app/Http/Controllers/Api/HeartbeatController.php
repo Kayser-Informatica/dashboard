@@ -34,7 +34,7 @@ class HeartbeatController extends Controller
             'status' => ['nullable', 'in:ok,failed,warning,received'],
             'message' => ['nullable', 'string', 'max:2000'],
             'duration_seconds' => ['nullable', 'integer', 'min:0'],
-            'log_file' => ['nullable', 'file', 'max:10240'], // 10MB
+            'log_file' => ['nullable', 'file', 'mimes:txt,log,csv,json,gz,zip', 'max:10240'], // 10MB
         ], [
             'service.required' => 'O campo service (nome do serviço) é obrigatório.',
             'service.string' => 'O nome do serviço deve ser um texto.',
@@ -49,6 +49,7 @@ class HeartbeatController extends Controller
             'duration_seconds.integer' => 'A duração em segundos deve ser um número inteiro.',
             'duration_seconds.min' => 'A duração em segundos não pode ser negativa.',
             'log_file.file' => 'O anexo log_file deve ser um arquivo válido.',
+            'log_file.mimes' => 'O arquivo de log deve possuir uma extensão permitida (.log, .txt, .csv, .json, .gz, .zip).',
             'log_file.max' => 'O arquivo de log não pode ultrapassar 10MB.',
         ]);
 

@@ -40,6 +40,11 @@ class Client extends Model
         return 'clt_live_' . Str::random(40);
     }
 
+    public static function hashToken(string $token): string
+    {
+        return hash('sha256', $token);
+    }
+
     public function monitoredServices(): HasMany
     {
         return $this->hasMany(MonitoredService::class);

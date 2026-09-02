@@ -37,7 +37,11 @@ class ClientTokenRecoveryController extends Controller
             ->first();
 
         if ($client) {
-            Mail::to($client->email)->send(new ClientTokenRecoveryMail($client));
+            $newPlainToken = Client::generateToken();
+            $client->api_token = Client::hashToken($newPlainToken);
+            $client->save();
+
+            Mail::to($client->email)->send(new ClientTokenRecoveryMail($client, $newPlainToken));
         }
 
         return response()->json([
