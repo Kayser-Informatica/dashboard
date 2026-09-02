@@ -89,8 +89,32 @@ class DashboardApiController extends Controller
             ];
         })->values();
 
+        $clientsData = Client::query()
+            ->with(['monitoredServices'])
+            ->orderBy('name')
+            ->get()
+            ->map(function (Client $client) {
+                $clientServices = $client->monitoredServices;
+                $total = $clientServices->count();
+                $online = $clientServices->filter(fn ($s) => $s->computed_status === 'ok')->count();
+                $attention = $clientServices->filter(fn ($s) => in_array($s->computed_status, ['failed', 'unknown']))->count();
+
+                return [
+                    'id' => $client->id,
+                    'name' => $client->name,
+                    'slug' => $client->slug,
+                    'email' => $client->email,
+                    'services_count' => $total,
+                    'online_count' => $online,
+                    'attention_count' => $attention,
+                    'has_attention' => $attention > 0,
+                ];
+            })
+            ->values();
+
         return response()->json([
             'metrics' => $metrics,
+            'clients' => $clientsData,
             'services' => $servicesData,
             'server_time' => now()->format('d/m/Y H:i:s'),
             'updated_at' => now()->toIso8601String(),

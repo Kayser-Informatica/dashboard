@@ -318,6 +318,232 @@
             margin-top: 6px;
         }
 
+        /* Client Filter Section & Cards */
+        .client-filter-section {
+            background: var(--bg-surface);
+            border: 1px solid var(--line);
+            border-radius: var(--radius-md);
+            padding: 14px 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            box-shadow: var(--shadow-card);
+        }
+
+        .client-filter-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .client-filter-title-wrap {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .client-filter-icon {
+            font-size: 14px;
+        }
+
+        .client-filter-title {
+            font-size: 11px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--ink-muted);
+            margin: 0;
+        }
+
+        .client-filter-count {
+            font-size: 10px;
+            font-weight: 700;
+            padding: 2px 7px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.06);
+            color: var(--ink-subtle);
+        }
+
+        .btn-clear-client-filter {
+            background: rgba(244, 63, 94, 0.12);
+            border: 1px solid rgba(244, 63, 94, 0.3);
+            color: #fca5a5;
+            font-size: 11px;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-clear-client-filter:hover {
+            background: rgba(244, 63, 94, 0.22);
+            color: #ffffff;
+            border-color: rgba(244, 63, 94, 0.5);
+        }
+
+        .client-cards-scroll {
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            padding-bottom: 4px;
+            scrollbar-width: thin;
+            scrollbar-color: var(--line-light) transparent;
+        }
+
+        .client-cards-scroll::-webkit-scrollbar {
+            height: 4px;
+        }
+
+        .client-cards-scroll::-webkit-scrollbar-thumb {
+            background: var(--line-light);
+            border-radius: 4px;
+        }
+
+        .client-card {
+            flex: 0 0 auto;
+            min-width: 175px;
+            max-width: 240px;
+            background: var(--bg-meta);
+            border: 1px solid var(--line);
+            border-radius: var(--radius-sm);
+            padding: 10px 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+            user-select: none;
+            position: relative;
+        }
+
+        .client-card:hover {
+            border-color: rgba(56, 189, 248, 0.4);
+            transform: translateY(-2px);
+            background: var(--bg-surface-elevated);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .client-card.active {
+            background: rgba(14, 165, 233, 0.12);
+            border-color: #38bdf8;
+            box-shadow: 0 0 16px -2px rgba(56, 189, 248, 0.35);
+        }
+
+        .client-card.has-attention {
+            border-left: 3px solid #f43f5e;
+        }
+
+        .client-card.has-attention.active {
+            border-color: #f43f5e;
+            background: rgba(244, 63, 94, 0.12);
+            box-shadow: 0 0 16px -2px rgba(244, 63, 94, 0.4);
+        }
+
+        .client-card-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: grid;
+            place-items: center;
+            font-size: 11px;
+            font-weight: 800;
+            font-family: 'JetBrains Mono', monospace;
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+            color: #fff;
+            flex-shrink: 0;
+        }
+
+        .client-card-avatar--client {
+            background: linear-gradient(135deg, #0ea5e9 0%, #6366f1 100%);
+        }
+
+        .client-card-info {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            min-width: 0;
+            flex: 1;
+        }
+
+        .client-card-top-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 6px;
+        }
+
+        .client-card-name {
+            font-size: 13px;
+            font-weight: 700;
+            color: #f1f5f9;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .client-alert-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: #f43f5e;
+            box-shadow: 0 0 8px #f43f5e;
+            flex-shrink: 0;
+            animation: pulse-ring 2s infinite;
+        }
+
+        .client-card-stats {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            flex-wrap: wrap;
+        }
+
+        .client-stat-badge {
+            font-size: 10px;
+            font-weight: 600;
+            padding: 1px 5px;
+            border-radius: 4px;
+            line-height: 1.3;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .client-stat-badge.stat--total {
+            background: rgba(255, 255, 255, 0.06);
+            color: var(--ink-muted);
+        }
+
+        .client-stat-badge.stat--ok {
+            background: rgba(16, 185, 129, 0.15);
+            color: #34d399;
+        }
+
+        .client-stat-badge.stat--attention {
+            background: rgba(244, 63, 94, 0.2);
+            color: #f87171;
+            font-weight: 700;
+        }
+
+        .empty-filter-results {
+            grid-column: 1 / -1;
+            padding: 40px 20px;
+            text-align: center;
+            background: var(--bg-surface);
+            border: 1px dashed var(--line);
+            border-radius: var(--radius-md);
+            color: var(--ink-muted);
+            font-size: 13px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
         /* Controls & Filter Bar */
         .filter-bar {
             display: flex;
@@ -1092,6 +1318,67 @@
             </article>
         </section>
 
+        <!-- Client Filter Section -->
+        <section class="client-filter-section" aria-label="Filtro rápido por cliente">
+            <div class="client-filter-header">
+                <div class="client-filter-title-wrap">
+                    <span class="client-filter-icon">🏢</span>
+                    <h2 class="client-filter-title">Filtrar por Cliente</h2>
+                    <span class="client-filter-count" id="client-filter-count-badge">{{ count($clientsData ?? []) }} {{ count($clientsData ?? []) === 1 ? 'empresa' : 'empresas' }}</span>
+                </div>
+                <div class="client-filter-actions">
+                    <button type="button" class="btn-clear-client-filter" id="btn-clear-client-filter" onclick="setClientFilter('all')" style="display: none;">
+                        <span>Limpar filtro de cliente</span>
+                        <span>✕</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="client-cards-scroll" id="client-cards-container">
+                <!-- Card 'Todos os Clientes' -->
+                <div class="client-card client-card--all active" data-client-id="all" onclick="setClientFilter('all')">
+                    <div class="client-card-avatar">
+                        <span>🌐</span>
+                    </div>
+                    <div class="client-card-info">
+                        <div class="client-card-name">Todos os Clientes</div>
+                        <div class="client-card-stats">
+                            <span class="client-stat-badge stat--total" id="client-all-total">{{ $metrics['total'] }} {{ $metrics['total'] === 1 ? 'rotina' : 'rotinas' }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Cards individuais por cliente -->
+                @foreach($clientsData ?? [] as $clientItem)
+                    <div class="client-card {{ $clientItem['has_attention'] ? 'has-attention' : '' }}" 
+                         data-client-id="{{ $clientItem['id'] }}" 
+                         data-client-slug="{{ $clientItem['slug'] }}"
+                         onclick="setClientFilter('{{ $clientItem['id'] }}')">
+                        <div class="client-card-avatar client-card-avatar--client">
+                            {{ strtoupper(substr($clientItem['name'], 0, 2)) }}
+                        </div>
+                        <div class="client-card-info">
+                            <div class="client-card-top-row">
+                                <span class="client-card-name" title="{{ $clientItem['name'] }}">{{ $clientItem['name'] }}</span>
+                                @if($clientItem['has_attention'])
+                                    <span class="client-alert-dot" title="Atenção: serviços com falha ou atraso"></span>
+                                @endif
+                            </div>
+                            <div class="client-card-stats">
+                                <span class="client-stat-badge stat--total">{{ $clientItem['services_count'] }} {{ $clientItem['services_count'] === 1 ? 'rotina' : 'rotinas' }}</span>
+                                @if($clientItem['online_count'] > 0)
+                                    <span class="client-stat-badge stat--ok" title="{{ $clientItem['online_count'] }} operacionais">● {{ $clientItem['online_count'] }}</span>
+                                @endif
+                                @if($clientItem['attention_count'] > 0)
+                                    <span class="client-stat-badge stat--attention" title="{{ $clientItem['attention_count'] }} com falha ou atrasados">▲ {{ $clientItem['attention_count'] }}</span>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        </section>
+
         <!-- Search and Filter Bar -->
         <div class="filter-bar">
             <div class="search-box">
@@ -1128,7 +1415,7 @@
                         };
                     @endphp
 
-                    <article class="service-card {{ $status === 'failed' ? 'service-card--failed' : '' }}" data-service-id="{{ $service->id }}" data-service-name="{{ strtolower($service->name) }}" data-client-name="{{ strtolower($service->client?->name ?? '') }}" data-status="{{ $status }}" onclick="openServiceModal('{{ $service->id }}')" style="cursor: pointer;">
+                    <article class="service-card {{ $status === 'failed' ? 'service-card--failed' : '' }}" data-service-id="{{ $service->id }}" data-client-id="{{ $service->client_id }}" data-service-name="{{ strtolower($service->name) }}" data-client-name="{{ strtolower($service->client?->name ?? '') }}" data-status="{{ $status }}" onclick="openServiceModal('{{ $service->id }}')" style="cursor: pointer;">
                         <div class="service-card-head">
                             <div class="service-title-wrap">
                                 <span class="service-client-badge" title="Cliente: {{ $service->client?->name }}">
@@ -1270,6 +1557,7 @@
 
     <script>
         let currentFilter = 'all';
+        let selectedClientId = 'all';
         let servicesDataMap = {};
 
         // Inicializar o mapa de serviços a partir dos dados do Controller
@@ -1302,26 +1590,162 @@
             filterServices();
         }
 
+        function setClientFilter(clientId) {
+            if (String(selectedClientId) === String(clientId) && clientId !== 'all') {
+                selectedClientId = 'all';
+            } else {
+                selectedClientId = String(clientId);
+            }
+
+            document.querySelectorAll('.client-card').forEach(card => {
+                const cId = card.dataset.clientId;
+                card.classList.toggle('active', String(cId) === String(selectedClientId));
+            });
+
+            const clearBtn = document.getElementById('btn-clear-client-filter');
+            if (clearBtn) {
+                clearBtn.style.display = selectedClientId !== 'all' ? 'inline-flex' : 'none';
+            }
+
+            filterServices();
+        }
+
+        function resetAllFilters() {
+            selectedClientId = 'all';
+            currentFilter = 'all';
+            const searchInput = document.getElementById('search-input');
+            if (searchInput) searchInput.value = '';
+
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.filter === 'all');
+            });
+
+            document.querySelectorAll('.client-card').forEach(card => {
+                card.classList.toggle('active', card.dataset.clientId === 'all');
+            });
+
+            const clearBtn = document.getElementById('btn-clear-client-filter');
+            if (clearBtn) clearBtn.style.display = 'none';
+
+            filterServices();
+        }
+
         function filterServices() {
             const query = (document.getElementById('search-input')?.value || '').toLowerCase().trim();
             const cards = document.querySelectorAll('.service-card');
+            let visibleCount = 0;
 
             cards.forEach(card => {
                 const serviceName = card.dataset.serviceName || '';
                 const clientName = card.dataset.clientName || '';
+                const clientId = card.dataset.clientId || '';
                 const status = card.dataset.status || '';
 
                 const matchesQuery = clientName.includes(query) || serviceName.includes(query);
-                let matchesFilter = true;
-
+                
+                let matchesStatus = true;
                 if (currentFilter === 'alerts') {
-                    matchesFilter = (status === 'failed');
+                    matchesStatus = (status === 'failed');
                 } else if (currentFilter === 'ok') {
-                    matchesFilter = (status === 'ok');
+                    matchesStatus = (status === 'ok');
                 }
 
-                card.style.display = (matchesQuery && matchesFilter) ? 'flex' : 'none';
+                let matchesClient = true;
+                if (selectedClientId !== 'all') {
+                    matchesClient = (String(clientId) === String(selectedClientId));
+                }
+
+                const isVisible = matchesQuery && matchesStatus && matchesClient;
+                card.style.display = isVisible ? 'flex' : 'none';
+                if (isVisible) visibleCount++;
             });
+
+            // Gerenciar mensagem quando nenhum serviço coincide com os filtros
+            let emptyMsgElem = document.getElementById('empty-filter-results-msg');
+            const container = document.getElementById('services-grid');
+
+            if (cards.length > 0 && visibleCount === 0) {
+                if (!emptyMsgElem && container) {
+                    emptyMsgElem = document.createElement('div');
+                    emptyMsgElem.id = 'empty-filter-results-msg';
+                    emptyMsgElem.className = 'empty-filter-results';
+                    emptyMsgElem.innerHTML = `
+                        <div style="font-size: 28px;">🔍</div>
+                        <div style="font-weight: 700; color: #fff; font-size: 15px;">Nenhum serviço encontrado com os filtros atuais</div>
+                        <p style="margin: 0; color: var(--ink-muted); max-width: 420px; font-size: 12px; line-height: 1.5;">
+                            Tente ajustar a busca, trocar o cliente selecionado ou alternar o filtro de status.
+                        </p>
+                        <button type="button" class="btn-clear-client-filter" style="margin-top: 6px; padding: 6px 14px; font-size: 12px;" onclick="resetAllFilters()">
+                            <span>Limpar todos os filtros</span>
+                            <span>↺</span>
+                        </button>
+                    `;
+                    container.appendChild(emptyMsgElem);
+                } else if (emptyMsgElem) {
+                    emptyMsgElem.style.display = 'flex';
+                }
+            } else if (emptyMsgElem) {
+                emptyMsgElem.style.display = 'none';
+            }
+        }
+
+        function renderClientCards(clients, totalServices) {
+            const container = document.getElementById('client-cards-container');
+            if (!container) return;
+
+            let html = `
+                <div class="client-card client-card--all ${selectedClientId === 'all' ? 'active' : ''}" data-client-id="all" onclick="setClientFilter('all')">
+                    <div class="client-card-avatar">
+                        <span>🌐</span>
+                    </div>
+                    <div class="client-card-info">
+                        <div class="client-card-name">Todos os Clientes</div>
+                        <div class="client-card-stats">
+                            <span class="client-stat-badge stat--total" id="client-all-total">${totalServices ?? 0} ${totalServices === 1 ? 'rotina' : 'rotinas'}</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            if (Array.isArray(clients)) {
+                clients.forEach(c => {
+                    const isActive = String(selectedClientId) === String(c.id);
+                    const initials = (c.name || 'CL').substring(0, 2).toUpperCase();
+                    html += `
+                        <div class="client-card ${c.has_attention ? 'has-attention' : ''} ${isActive ? 'active' : ''}" 
+                             data-client-id="${c.id}" 
+                             data-client-slug="${escapeHtml(c.slug || '')}"
+                             onclick="setClientFilter('${c.id}')">
+                            <div class="client-card-avatar client-card-avatar--client">
+                                ${escapeHtml(initials)}
+                            </div>
+                            <div class="client-card-info">
+                                <div class="client-card-top-row">
+                                    <span class="client-card-name" title="${escapeHtml(c.name)}">${escapeHtml(c.name)}</span>
+                                    ${c.has_attention ? '<span class="client-alert-dot" title="Atenção: serviços com falha ou atraso"></span>' : ''}
+                                </div>
+                                <div class="client-card-stats">
+                                    <span class="client-stat-badge stat--total">${c.services_count} ${c.services_count === 1 ? 'rotina' : 'rotinas'}</span>
+                                    ${c.online_count > 0 ? `<span class="client-stat-badge stat--ok" title="${c.online_count} operacionais">● ${c.online_count}</span>` : ''}
+                                    ${c.attention_count > 0 ? `<span class="client-stat-badge stat--attention" title="${c.attention_count} com falha ou atrasados">▲ ${c.attention_count}</span>` : ''}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+
+            container.innerHTML = html;
+
+            const badge = document.getElementById('client-filter-count-badge');
+            if (badge && Array.isArray(clients)) {
+                badge.textContent = `${clients.length} ${clients.length === 1 ? 'empresa' : 'empresas'}`;
+            }
+
+            const clearBtn = document.getElementById('btn-clear-client-filter');
+            if (clearBtn) {
+                clearBtn.style.display = selectedClientId !== 'all' ? 'inline-flex' : 'none';
+            }
         }
 
         function openServiceModal(serviceId) {
@@ -1460,7 +1884,7 @@
                 const miniAlertIcon = status === 'ok' ? '💬' : '⚠️';
 
                 html += `
-                    <article class="service-card ${status === 'failed' ? 'service-card--failed' : ''}" data-service-id="${service.id}" data-service-name="${escapeHtml((service.name || '').toLowerCase())}" data-client-name="${escapeHtml((service.client_name || '').toLowerCase())}" data-status="${status}" onclick="openServiceModal('${service.id}')" style="cursor: pointer;">
+                    <article class="service-card ${status === 'failed' ? 'service-card--failed' : ''}" data-service-id="${service.id}" data-client-id="${service.client_id || ''}" data-service-name="${escapeHtml((service.name || '').toLowerCase())}" data-client-name="${escapeHtml((service.client_name || '').toLowerCase())}" data-status="${status}" onclick="openServiceModal('${service.id}')" style="cursor: pointer;">
                         <div class="service-card-head">
                             <div class="service-title-wrap">
                                 <span class="service-client-badge" title="Cliente: ${escapeHtml(service.client_name)}">
@@ -1540,6 +1964,10 @@
                     }
 
                     document.getElementById('metric-logs-today').textContent = data.metrics.logs_today;
+                }
+
+                if (data.clients) {
+                    renderClientCards(data.clients, data.metrics ? data.metrics.total : 0);
                 }
 
                 if (data.services) {
