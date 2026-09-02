@@ -45,6 +45,7 @@ return [
         'username' => env('DASHBOARD_USERNAME', 'admin'),
         'password' => env('DASHBOARD_PASSWORD'),
         'ip_whitelist' => env('DASHBOARD_IP_WHITELIST', ''),
+        'log_retention_days' => (int) env('LOG_RETENTION_DAYS', 30),
     ],
 
     'clients' => [

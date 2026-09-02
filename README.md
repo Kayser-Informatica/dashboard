@@ -241,6 +241,7 @@ No seu arquivo `.env`:
 | `DASHBOARD_IP_WHITELIST` | *(vazio)* | IPs ou faixas CIDR separados por vírgula que acessam o Dashboard **sem solicitar senha** (ex: `127.0.0.1, 192.168.1.0/24, 200.50.10.20`). |
 | `ALLOW_PUBLIC_REGISTRATION` | `true` | Se `false`, desativa o cadastro anônimo de clientes, exigindo chave mestra. |
 | `CLIENT_REGISTRATION_SECRET` | *(vazio)* | Chave secreta obrigatória para cadastrar novos clientes via API (`X-Registration-Secret` header). |
+| `LOG_RETENTION_DAYS` | `30` | Quantidade de dias de retenção de arquivos e registros de logs antes do expurgo automático (`php artisan logs:prune`). |
 | `DASHBOARD_REFRESH_INTERVAL_SECONDS` | `30` | Intervalo em segundos para atualização reativa automática do painel sem reload. |
 | `APP_TIMEZONE` | `America/Sao_Paulo` | Fuso horário para registro e exibição das datas de execução. |
 | `MAIL_MAILER` | `smtp` / `log` | Driver de envio de e-mails (`smtp`, `ses`, `mailgun`, etc.). |

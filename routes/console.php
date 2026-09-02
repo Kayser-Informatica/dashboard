@@ -6,4 +6,5 @@ use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Schedule;
 
 Schedule::command('monitors:check-deadlines')->everyMinute();
+Schedule::command('logs:prune')->daily();
 
