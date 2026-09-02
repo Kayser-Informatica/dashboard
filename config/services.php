@@ -44,6 +44,7 @@ return [
         'auth_enabled' => (bool) env('DASHBOARD_AUTH_ENABLED', false),
         'username' => env('DASHBOARD_USERNAME', 'admin'),
         'password' => env('DASHBOARD_PASSWORD'),
+        'ip_whitelist' => env('DASHBOARD_IP_WHITELIST', ''),
     ],
 
 ];

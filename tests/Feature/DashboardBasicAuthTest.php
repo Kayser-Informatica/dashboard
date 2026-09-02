@@ -122,4 +122,25 @@ class DashboardBasicAuthTest extends TestCase
 
         $authorized->assertOk();
     }
+
+    public function test_allows_dashboard_access_without_credentials_if_ip_is_whitelisted(): void
+    {
+        Config::set('services.dashboard.auth_enabled', true);
+        Config::set('services.dashboard.username', 'admin');
+        Config::set('services.dashboard.password', 'secret123');
+        Config::set('services.dashboard.ip_whitelist', '192.168.1.50, 10.0.0.0/24');
+
+        // IP na whitelist direta -> Acesso liberado sem login
+        $directIpResponse = $this->withServerVariables(['REMOTE_ADDR' => '192.168.1.50'])->get('/');
+        $directIpResponse->assertOk();
+
+        // IP dentro do range CIDR da whitelist -> Acesso liberado sem login
+        $cidrIpResponse = $this->withServerVariables(['REMOTE_ADDR' => '10.0.0.123'])->getJson('/api/dashboard/metrics');
+        $cidrIpResponse->assertOk();
+
+        // IP fora da whitelist -> Bloqueado sem credenciais
+        $outsideIpResponse = $this->withServerVariables(['REMOTE_ADDR' => '203.0.113.19'])->get('/');
+        $outsideIpResponse->assertUnauthorized();
+    }
 }
+
