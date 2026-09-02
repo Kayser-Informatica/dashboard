@@ -133,12 +133,12 @@ php artisan monitors:check-deadlines
 
 ---
 
-## 🔌 Integração Delphi (`delphi_class`)
+## 🔌 Integração Delphi (`examples/delphi`)
 
 Para aplicações desktop, serviços Windows ou servidores desenvolvidos em **Delphi** (10.1 Berlin ou superior), está disponível uma unit pronta e desacoplada para envio de heartbeat e arquivos de log:
 
-* **Classe Delphi:** [`delphi_class/uHeartbeatMonitor.pas`](delphi_class/uHeartbeatMonitor.pas) — Classe `THeartbeatMonitor` nativa (`System.Net.HttpClient`), não-bloqueante (threads assíncronas), com suporte a timer periódico, disparo sob demanda e anexo de arquivos de log (`multipart/form-data`).
-* **Documentação & Exemplos:** Consulte o guia detalhado em [`delphi_class/README_HeartbeatMonitor.md`](delphi_class/README_HeartbeatMonitor.md) com exemplos práticos para VCL, Horse e serviços Console/Windows.
+* **Classe Delphi:** [`examples/delphi/uHeartbeatMonitor.pas`](examples/delphi/uHeartbeatMonitor.pas) — Classe `THeartbeatMonitor` nativa (`System.Net.HttpClient`), não-bloqueante (threads assíncronas), com suporte a timer periódico, disparo sob demanda e anexo de arquivos de log (`multipart/form-data`).
+* **Documentação & Exemplos:** Consulte o guia detalhado em [`examples/delphi/README_HeartbeatMonitor.md`](examples/delphi/README_HeartbeatMonitor.md) com exemplos práticos para VCL, Horse e serviços Console/Windows.
 
 ---
 
